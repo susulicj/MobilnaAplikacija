@@ -1,8 +1,8 @@
-package com.example.projekatmobilne
+package com.example.projekatmobilne.Activity
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import com.example.projekatmobilne.databinding.ActivityMainBinding
+import com.example.projekatmobilne.R
 
 class MainActivity : AppCompatActivity() {
 
