@@ -48,7 +48,8 @@ class LoginActivity : AppCompatActivity() {
         viewModel.loginSuccess.observe(this) { success ->
             if (success) {
                 Log.w("TAG", "Uspesna prijava")
-                //da se povezemo na sledeci aktiviti fragment koji zelimo da se pojavi
+                val intent = Intent(this, ProfileActivity::class.java)
+                startActivity(intent)
             }
         }
 

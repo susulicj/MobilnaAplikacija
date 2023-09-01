@@ -33,7 +33,7 @@ class RegisterActivity : AppCompatActivity() {
         var imeIprezime = binding.etImeiPrezime.text.toString()
         var brojTelefona = binding.editTextNumber.text.toString()
 
-        viewModel.registerUser(email, korisnickoIme, password, imeIprezime, brojTelefona)
+        viewModel.registerUser(email, password, korisnickoIme,  imeIprezime, brojTelefona)
 
         viewModel.registrationStatus.observe(this) { success ->
             if (success) {

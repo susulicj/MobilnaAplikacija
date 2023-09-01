@@ -42,9 +42,10 @@ class RegisterViewModel : ViewModel() {
                         database.child(korisnickoIme).setValue(newUser)
                                  .addOnSuccessListener {
                                       _registrationStatus.value = true
+
                                  }
                                  .addOnFailureListener {
-                                      _errorMessage.value = "Neuspesno"
+                                      _errorMessage.value = "Neuspesno pvde"
                             }
                     }
                 } else {
