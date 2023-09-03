@@ -18,5 +18,14 @@
         android:id="@+id/mapsFragment"
         android:name="com.example.projekatmobilne.Fragments.MapsFragment"
         android:label="fragment_maps"
-        tools:layout="@layout/fragment_maps" />
+        tools:layout="@layout/fragment_maps" >
+        <action
+            android:id="@+id/action_mapsFragment_to_addMarkerFragment"
+            app:destination="@id/addMarkerFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/addMarkerFragment"
+        android:name="com.example.projekatmobilne.Fragments.AddMarkerFragment"
+        android:label="fragment_add_marker"
+        tools:layout="@layout/fragment_add_marker" />
 </navigation>
