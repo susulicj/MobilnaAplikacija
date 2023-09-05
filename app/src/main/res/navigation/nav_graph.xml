@@ -22,10 +22,18 @@
         <action
             android:id="@+id/action_mapsFragment_to_addMarkerFragment"
             app:destination="@id/addMarkerFragment" />
+        <action
+            android:id="@+id/action_mapsFragment_to_commentsFragment"
+            app:destination="@id/commentsFragment" />
     </fragment>
     <fragment
         android:id="@+id/addMarkerFragment"
         android:name="com.example.projekatmobilne.Fragments.AddMarkerFragment"
         android:label="fragment_add_marker"
         tools:layout="@layout/fragment_add_marker" />
+    <fragment
+        android:id="@+id/commentsFragment"
+        android:name="com.example.projekatmobilne.Fragments.CommentsFragment"
+        android:label="fragment_comments"
+        tools:layout="@layout/fragment_comments" />
 </navigation>

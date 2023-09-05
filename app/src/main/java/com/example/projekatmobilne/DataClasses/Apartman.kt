@@ -6,10 +6,21 @@ import com.google.firebase.auth.FirebaseUser
 
 data class Apartman(
     val adresa: String? = null,
-    val povrsina: Number? = null,
-    val brojSoba: Number? = null,
-    val brojTelefona: Number? = null,
+    val povrsina: Double? = null,
+    val brojSoba: Long? = null,
+    val brojTelefona: Long? = null,
     val email: String? = null,
     val latlng: LatLng? = null,
-    val user: User? = null
-)
+    val verifikacioniKod: String,
+    val user: User? = null,
+){
+    constructor() : this(
+        adresa = "",
+        povrsina = 0.0,
+        brojSoba = 0,
+        brojTelefona = 0,
+        email = "",
+        latlng = LatLng(0.0, 0.0),
+        verifikacioniKod = ""
+    )
+}

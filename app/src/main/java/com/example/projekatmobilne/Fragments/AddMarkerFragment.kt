@@ -62,10 +62,11 @@ class AddMarkerFragment : Fragment()  {
             val noviApartman = Apartman(
                  adresa = binding.tvAdresa.text.toString(),
                  povrsina = binding.etPovrsina.text.toString().toDouble(),
-                 brojSoba = binding.etBrojSoba.text.toString().toInt(),
+                 brojSoba = binding.etBrojSoba.text.toString().toLong(),
                  brojTelefona = binding.tvtelefon.text.toString().toLong(),
                  email = binding.ptEmailKontakt.text.toString(),
                  latlng = parseLatLngFromString(latLng),
+                 verifikacioniKod = binding.idVerKod.text.toString(),
                  user = currentUser
             )
 

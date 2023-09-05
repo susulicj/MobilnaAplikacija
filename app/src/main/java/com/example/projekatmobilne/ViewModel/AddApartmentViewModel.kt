@@ -6,11 +6,15 @@ import androidx.lifecycle.ViewModel
 import com.example.projekatmobilne.DataClasses.Apartman
 import com.example.projekatmobilne.DataClasses.User
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 
 class AddApartmentViewModel : ViewModel() {
     private val database  = FirebaseFirestore.getInstance()
     private val apartmanRef = database.collection("apartmani")
+    private lateinit var currentFirebaseUser: FirebaseUser
+    private lateinit var currentUser: User
 
     fun dodajApartman(apartman: Apartman) {
         val apartmanData = hashMapOf(
@@ -20,10 +24,12 @@ class AddApartmentViewModel : ViewModel() {
             "brojTelefona" to apartman.brojTelefona,
             "email" to apartman.email,
             "latlng" to apartman.latlng,
-            "user" to apartman.user
+            "verifikacioniKod" to apartman.verifikacioniKod,
+            "user" to apartman.user,
+
         )
 
-        apartmanRef.add(apartmanData)
+        apartmanRef.document(apartman.verifikacioniKod!!).set(apartmanData)
             .addOnSuccessListener { documentReference ->
 
             }
@@ -58,7 +64,8 @@ class AddApartmentViewModel : ViewModel() {
                         podaciApartmana["brojSoba"] as Long,
                         podaciApartmana["brojTelefona"] as Long,
                         podaciApartmana["email"] as String,
-                        latLng
+                        latLng,
+                        podaciApartmana["verifikacioniKod"] as String
                     )
                     listaApartmana.add(apartman)
                 }

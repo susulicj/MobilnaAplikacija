@@ -13,11 +13,15 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.setFragmentResultListener
+import androidx.fragment.app.viewModels
+import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.example.projekatmobilne.DataClasses.Apartman
 import com.example.projekatmobilne.R
 import com.example.projekatmobilne.ViewModel.AddApartmentViewModel
+import com.example.projekatmobilne.ViewModel.CommentViewModel
+import com.example.projekatmobilne.ViewModel.SharedViewModel
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -37,7 +41,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     private lateinit var locationCallback: LocationCallback
     private var currentMarker: Marker? = null
     private lateinit var viewModel: AddApartmentViewModel
-
+    private lateinit var viewModelshared: SharedViewModel
 
 
     companion object{
@@ -68,6 +72,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     override fun onMapReady(googleMap: GoogleMap) {
 
         mMap = googleMap
+        viewModelshared = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
         viewModel = ViewModelProvider(this).get(AddApartmentViewModel::class.java)
         mMap.uiSettings.isZoomControlsEnabled = true
 
@@ -111,14 +116,30 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
         viewModel.preuzmiSveApartmane{listaApartmana ->
             for(apartman in listaApartmana){
-                mMap.addMarker(MarkerOptions().position(apartman.latlng!!).title(apartman.adresa))
+                Log.d("apartman kliknuti", "${apartman.latlng}")
+                val marker = mMap.addMarker(MarkerOptions().position(apartman.latlng!!).title(apartman.adresa))
+                marker?.tag = apartman
+
             }
         }
 
+        mMap.setOnMarkerClickListener{marker->
 
+            val clickedApartman = marker.tag as? Apartman
+            Log.d("apartman kliknutii", "$clickedApartman")
+            if (clickedApartman != null) {
+                viewModelshared.setclickedApartman(clickedApartman)
+            }
+
+            val action = MapsFragmentDirections.actionMapsFragmentToCommentsFragment()
+            view?.findNavController()?.navigate(action)
+
+            true
+        }
 
 
     }
+
     private fun MapClickListener(){
 
         mMap.setOnMapClickListener {latLng->
@@ -143,3 +164,5 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         }
     }
 }
+
+
