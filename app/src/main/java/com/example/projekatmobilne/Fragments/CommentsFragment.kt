@@ -65,14 +65,10 @@ class CommentsFragment : Fragment() {
 
         commentList = arrayListOf()
 
-       /* myAdapter = MyRecyclerViewAdapter(commentList)
-        recyclerView.adapter = myAdapter*/
-
-
         EventChangeListener()
 
 
-       dodajKomentar()
+        dodajKomentar()
 
 
         return binding.root
@@ -82,99 +78,70 @@ class CommentsFragment : Fragment() {
         viewModel.getclickedApartman().observe(viewLifecycleOwner, Observer { apartman ->
             if (apartman != null) {
                 kliknutiApartman = apartman
-                Log.d("apartman kliknutiii", "$kliknutiApartman")
             }
-            Log.d("apartman kliknutiii", "$kliknutiApartman")
-            db = FirebaseFirestore.getInstance()
-            db.collection("komentari")
-                .whereEqualTo("verifikacioniKodApartman", kliknutiApartman!!.verifikacioniKod)
-                .get()
-                .addOnSuccessListener {
-                    Log.d("apartmanjes", "${it.documents}")
-                    if (!it.isEmpty) {
-                        for (document in it.documents) {
-                            val commentData = document.data // Dohvatite podatke za dokument
 
-                            if (commentData != null) {
-                                val tekst = commentData["tekst"] as String? // Dohvatite vrednost za "tekst" polje
-                                val userMap = commentData["user"] as Map<String, Any>? // Dohvatite mapu za "user" polje
-                                val apartmanMap = commentData["apartman"] as Map<String, Any>? // Dohvatite mapu za "apartman" polje
-                                val verifikacioniKodApartman = commentData["verifikacioniKodApartman"] as String? // Dohvatite vrednost za "verifikacioniKodApartman" polje
+            commentViewModel.getComments(kliknutiApartman!!.verifikacioniKod)
 
-                                // Ručno konstruišite Comment objekat koristeći podatke iz dokumenta
-                                val comment = Comment(
-                                    tekst = tekst,
-                                    user = userMap?.let { createUserFromMap(it) }, // Kreirajte User objekat iz mape
-                                    apartman = apartmanMap?.let { createApartmanFromMap(it) }, // Kreirajte Apartman objekat iz mape
-                                    verifikacioniKodApartman = verifikacioniKodApartman
-                                )
-
-                                commentList.add(comment)
-                                Log.d("apartmanjes", "$comment")
-                                myAdapter = MyRecyclerViewAdapter(commentList)
-                                recyclerView.adapter = myAdapter
-                            }
+            commentViewModel.getIsFetchingLiveData().observe(this, Observer { fetchingStatus ->
+                if (!fetchingStatus) {
+                    commentViewModel.getCommentListLiveData().observe(this, Observer { commentList ->
+                        if (commentList != null) {
+                            Log.d("apartman", "Komentari : $commentList")
+                            val myAdapter = MyRecyclerViewAdapter(commentList)
+                            recyclerView.adapter = myAdapter
                         }
-                    }
-
-
+                    })
                 }
-                .addOnFailureListener{
-                    Log.d("apartman", "$it")
-                }
+            })
 
 
 
+
+            /* db = FirebaseFirestore.getInstance()
+             db.collection("komentari")
+                 .whereEqualTo("verifikacioniKodApartman", kliknutiApartman!!.verifikacioniKod)
+                 .get()
+                 .addOnSuccessListener {
+                     Log.d("apartmanjes", "${it.documents}")
+                     if (!it.isEmpty) {
+                         for (document in it.documents) {
+                             val commentData = document.data // Dohvatite podatke za dokument
+
+                             if (commentData != null) {
+                                 val tekst = commentData["tekst"] as String? // Dohvatite vrednost za "tekst" polje
+                                 val userMap = commentData["user"] as Map<String, Any>? // Dohvatite mapu za "user" polje
+                                 val apartmanMap = commentData["apartman"] as Map<String, Any>? // Dohvatite mapu za "apartman" polje
+                                 val verifikacioniKodApartman = commentData["verifikacioniKodApartman"] as String? // Dohvatite vrednost za "verifikacioniKodApartman" polje
+
+                                 // Ručno konstruišite Comment objekat koristeći podatke iz dokumenta
+                                 val comment = Comment(
+                                     tekst = tekst,
+                                     user = userMap?.let { createUserFromMap(it) }, // Kreirajte User objekat iz mape
+                                     apartman = apartmanMap?.let { createApartmanFromMap(it) }, // Kreirajte Apartman objekat iz mape
+                                     verifikacioniKodApartman = verifikacioniKodApartman
+                                 )
+
+                                 commentList.add(comment)
+                                 Log.d("apartmanjes", "$comment")
+                                 myAdapter = MyRecyclerViewAdapter(commentList)
+                                 recyclerView.adapter = myAdapter
+                             }
+                         }
+                     }
+
+
+                 }
+                 .addOnFailureListener{
+                     Log.d("apartman", "$it")
+                 }
+
+
+ */
         })
 
 
 
     }
-    fun createUserFromMap(userMap: Map<String, Any>): User? {
-        val email = userMap["email"] as String?
-        val korisnickoIme = userMap["korisnickoIme"] as String?
-        val ImeiPrezime = userMap["ImeiPrezime"] as String?
-        val brojTelefona = userMap["brojTelefona"] as String?
-
-        if (email != null) {
-            return User(email, korisnickoIme, ImeiPrezime, brojTelefona)
-        } else {
-            return null
-        }
-    }
-
-    fun createApartmanFromMap(apartmanMap: Map<String, Any>): Apartman? {
-        val adresa = apartmanMap["adresa"] as String?
-        val povrsina = apartmanMap["povrsina"] as Double?
-        val brojSoba = apartmanMap["brojSoba"] as Long?
-        val brojTelefona = apartmanMap["brojTelefona"] as Long?
-        val email = apartmanMap["email"] as String?
-        val verifikacioniKod = apartmanMap["verifikacioniKod"] as String?
-        val userMap = apartmanMap["user"] as Map<String, Any>?
-
-        // Obrada latlng podataka
-        val latlngData = apartmanMap["latlng"] as Map<String, Any>?
-        val latitude = latlngData?.get("latitude") as Double?
-        val longitude = latlngData?.get("longitude") as Double?
-        val latlng = if (latitude != null && longitude != null) {
-            LatLng(latitude, longitude)
-        } else {
-            null
-        }
-
-        val user = userMap?.let { createUserFromMap(it) } // Kreirajte User objekat iz mape
-
-        if (verifikacioniKod != null) {
-            return Apartman(adresa, povrsina, brojSoba, brojTelefona, email, latlng, verifikacioniKod, user)
-        } else {
-            return null
-        }
-    }
-
-
-
-
-
     fun dodajKomentar(){
 
         var kliknutiApartman: Apartman? = null
@@ -201,18 +168,7 @@ class CommentsFragment : Fragment() {
         }
     }
 
-    fun vratiApartman(){
-        var kliknutiApartman: Apartman? = null
-        viewModel.getclickedApartman().observe(viewLifecycleOwner, Observer { apartman ->
-            if (apartman != null) {
-                kliknutiApartman = apartman
-                Log.d("apartman kliknutiii", "$kliknutiApartman")
 
-            }
-
-
-        })
-    }
 
 
 

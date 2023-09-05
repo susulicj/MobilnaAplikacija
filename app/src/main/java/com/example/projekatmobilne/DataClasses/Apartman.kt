@@ -13,14 +13,4 @@ data class Apartman(
     val latlng: LatLng? = null,
     val verifikacioniKod: String,
     val user: User? = null,
-){
-    constructor() : this(
-        adresa = "",
-        povrsina = 0.0,
-        brojSoba = 0,
-        brojTelefona = 0,
-        email = "",
-        latlng = LatLng(0.0, 0.0),
-        verifikacioniKod = ""
-    )
-}
+)

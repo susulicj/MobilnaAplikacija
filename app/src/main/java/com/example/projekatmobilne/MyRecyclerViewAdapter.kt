@@ -7,7 +7,7 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.projekatmobilne.DataClasses.Comment
 
-class MyRecyclerViewAdapter(private var commentList: ArrayList<Comment>): RecyclerView.Adapter<MyViewHolder>() {
+class MyRecyclerViewAdapter(private var commentList: List<Comment>): RecyclerView.Adapter<MyViewHolder>() {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         val leyoutInflater = LayoutInflater.from(parent.context)
         val listItem = leyoutInflater.inflate(R.layout.list_item, parent, false)
@@ -20,7 +20,7 @@ class MyRecyclerViewAdapter(private var commentList: ArrayList<Comment>): Recycl
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
         val comment : Comment = commentList[position]
-        holder.myTextName.text = comment.user!!.email
+        holder.myTextName.text = comment.user!!.email + ":"
         holder.myText.text = comment.tekst
    }
 
