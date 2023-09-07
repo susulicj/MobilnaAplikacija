@@ -30,4 +30,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.866" />
+
+    <Button
+        android:id="@+id/btnListaKorsnika"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Lista korisnika"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.149"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.866" />
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,20 +1,19 @@
 package com.example.projekatmobilne.ViewModel
 
 import android.util.Log
-import android.widget.Toast
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.projekatmobilne.DataClasses.Apartman
-import com.example.projekatmobilne.DataClasses.User
+import com.example.projekatmobilne.DataClasses.Comment
 import com.google.android.gms.maps.model.LatLng
-import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 
 class AddApartmentViewModel : ViewModel() {
     private val database  = FirebaseFirestore.getInstance()
     private val apartmanRef = database.collection("apartmani")
-    private lateinit var currentFirebaseUser: FirebaseUser
-    private lateinit var currentUser: User
+    private var listenerRegistration: ListenerRegistration? = null
 
     fun dodajApartman(apartman: Apartman) {
         val apartmanData = hashMapOf(
@@ -25,6 +24,8 @@ class AddApartmentViewModel : ViewModel() {
             "email" to apartman.email,
             "latlng" to apartman.latlng,
             "verifikacioniKod" to apartman.verifikacioniKod,
+            "prosecnaOcena" to apartman.prosecnaOcena,
+            "listaOcena" to apartman.listaOcena,
             "user" to apartman.user,
 
         )
@@ -74,6 +75,51 @@ class AddApartmentViewModel : ViewModel() {
         }
     }
 
+  fun dodajOcenuApartmanu(apartmanID: String, novaOcena: Int){
+      apartmanRef.document(apartmanID).update("listaOcena", FieldValue.arrayUnion(novaOcena))
+          .addOnSuccessListener {
 
+
+          }
+          .addOnFailureListener{
+
+          }
+
+  }
+
+
+    fun azuriranjeProsecneOcene(apartmanID: String, callback: (Double) -> Unit) {
+        listenerRegistration = apartmanRef.document(apartmanID).addSnapshotListener { documentSnapshot, e ->
+            if (e != null) {
+                return@addSnapshotListener
+            }
+
+            if (documentSnapshot != null && documentSnapshot.exists()) {
+                val listaOcena = documentSnapshot.get("listaOcena") as? List<Int>
+                if (listaOcena != null) {
+
+                    val prosecnaOcena = listaOcena.average()
+                    apartmanRef.document(apartmanID).update("prosecnaOcena", prosecnaOcena)
+                        .addOnSuccessListener {
+                             callback(prosecnaOcena)
+                        }
+                        .addOnFailureListener { exception ->
+
+                        }
+                }
+            }
+        }
+    }
+
+    fun vratiProsecnuOcenu(apartmanID: String, callback: (Double) -> Unit){
+        apartmanRef.document(apartmanID).get()
+            .addOnSuccessListener {
+                val prosecnaOcena = it.get("prosecnaOcena") as Double
+                if(prosecnaOcena != null){
+                    callback(prosecnaOcena)
+                }
+            }
+    }
 
 }
+

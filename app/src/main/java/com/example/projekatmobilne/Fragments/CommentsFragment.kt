@@ -6,7 +6,9 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.clearFragmentResult
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateViewModelFactory
@@ -34,13 +36,14 @@ import kotlinx.coroutines.tasks.await
 class CommentsFragment : Fragment() {
     private lateinit var binding: FragmentCommentsBinding
     private lateinit var viewModel: SharedViewModel
+    private lateinit var apartmanViewModel: AddApartmentViewModel
     private lateinit var currentFirebaseUser: FirebaseUser
     private lateinit var currentUser: User
     private lateinit var commentViewModel: AddCommentViewModel
     private lateinit var recyclerView: RecyclerView
-    private lateinit var db: FirebaseFirestore
-    private lateinit var myAdapter: MyRecyclerViewAdapter
     private lateinit var commentList : ArrayList<Comment>
+    private var ocena: Int = 0
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -52,6 +55,7 @@ class CommentsFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
+        apartmanViewModel = ViewModelProvider(this).get(AddApartmentViewModel::class.java)
         commentViewModel = ViewModelProvider(this).get(AddCommentViewModel::class.java)
         viewModel = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
         binding = FragmentCommentsBinding.inflate(inflater, container, false)
@@ -65,13 +69,64 @@ class CommentsFragment : Fragment() {
 
         commentList = arrayListOf()
 
+
+        Ocenjivanje()
         EventChangeListener()
-
-
         dodajKomentar()
 
 
         return binding.root
+    }
+
+    private fun Ocenjivanje(){
+        var kliknutiApartman: Apartman? = null
+        viewModel.getclickedApartman().observe(viewLifecycleOwner, Observer { apartman ->
+            if (apartman != null) {
+                kliknutiApartman = apartman
+            }
+            apartmanViewModel.vratiProsecnuOcenu(kliknutiApartman!!.verifikacioniKod) { prosecnaOcena ->
+                binding.tvProsecnaOcena.text = prosecnaOcena.toString()
+
+            }
+        })
+
+        val ratingBar = binding.ratingBar
+        val btnSubmit = binding.btnSubmit
+        val ratingScale = binding.twOcena
+
+        ratingBar.setOnRatingBarChangeListener{ratingBar, new, personOrComputer->
+            ratingScale.text = new.toString()
+            ocena = new.toInt()
+            when (ratingBar.rating.toInt()){
+                1-> ratingScale.text = "Vary bad"
+                2-> ratingScale.text = "Bad"
+                3-> ratingScale.text = "Good"
+                4-> ratingScale.text = "Great"
+                5-> ratingScale.text = "Awsome"
+                else -> ratingScale.text = " "
+
+            }
+        }
+
+        btnSubmit.setOnClickListener{
+            val message = ratingBar.rating.toString()
+            Toast.makeText(requireActivity(), "Rating is"+ message, Toast.LENGTH_SHORT).show()
+            var kliknutiApartman: Apartman? = null
+            viewModel.getclickedApartman().observe(viewLifecycleOwner, Observer { apartman ->
+                if (apartman != null) {
+                    kliknutiApartman = apartman
+                }
+
+                apartmanViewModel.dodajOcenuApartmanu(kliknutiApartman!!.verifikacioniKod, ratingBar.rating.toInt())
+                apartmanViewModel.azuriranjeProsecneOcene(kliknutiApartman!!.verifikacioniKod){prosecnaOcena ->
+                    binding.tvProsecnaOcena.text = prosecnaOcena.toString()
+
+                }
+            })
+
+            commentViewModel.azuriranjePoena(currentUser.email.toString(),3)
+
+        }
     }
     private fun EventChangeListener(){
         var kliknutiApartman: Apartman? = null
@@ -93,50 +148,6 @@ class CommentsFragment : Fragment() {
                     })
                 }
             })
-
-
-
-
-            /* db = FirebaseFirestore.getInstance()
-             db.collection("komentari")
-                 .whereEqualTo("verifikacioniKodApartman", kliknutiApartman!!.verifikacioniKod)
-                 .get()
-                 .addOnSuccessListener {
-                     Log.d("apartmanjes", "${it.documents}")
-                     if (!it.isEmpty) {
-                         for (document in it.documents) {
-                             val commentData = document.data // Dohvatite podatke za dokument
-
-                             if (commentData != null) {
-                                 val tekst = commentData["tekst"] as String? // Dohvatite vrednost za "tekst" polje
-                                 val userMap = commentData["user"] as Map<String, Any>? // Dohvatite mapu za "user" polje
-                                 val apartmanMap = commentData["apartman"] as Map<String, Any>? // Dohvatite mapu za "apartman" polje
-                                 val verifikacioniKodApartman = commentData["verifikacioniKodApartman"] as String? // Dohvatite vrednost za "verifikacioniKodApartman" polje
-
-                                 // Ručno konstruišite Comment objekat koristeći podatke iz dokumenta
-                                 val comment = Comment(
-                                     tekst = tekst,
-                                     user = userMap?.let { createUserFromMap(it) }, // Kreirajte User objekat iz mape
-                                     apartman = apartmanMap?.let { createApartmanFromMap(it) }, // Kreirajte Apartman objekat iz mape
-                                     verifikacioniKodApartman = verifikacioniKodApartman
-                                 )
-
-                                 commentList.add(comment)
-                                 Log.d("apartmanjes", "$comment")
-                                 myAdapter = MyRecyclerViewAdapter(commentList)
-                                 recyclerView.adapter = myAdapter
-                             }
-                         }
-                     }
-
-
-                 }
-                 .addOnFailureListener{
-                     Log.d("apartman", "$it")
-                 }
-
-
- */
         })
 
 
@@ -162,7 +173,9 @@ class CommentsFragment : Fragment() {
             )
 
             commentViewModel.dodajKomentar(noviKomentar)
+            commentViewModel.azuriranjePoena(currentUser.email.toString(), 5)
             EventChangeListener()
+
 
             Log.d("apartman kliknutiii", "$noviKomentar")
         }

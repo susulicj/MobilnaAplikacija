@@ -13,6 +13,9 @@
         <action
             android:id="@+id/action_homeProfileFragment_to_mapsFragment"
             app:destination="@id/mapsFragment" />
+        <action
+            android:id="@+id/action_homeProfileFragment_to_usersListFragment"
+            app:destination="@id/usersListFragment" />
     </fragment>
     <fragment
         android:id="@+id/mapsFragment"
@@ -36,4 +39,9 @@
         android:name="com.example.projekatmobilne.Fragments.CommentsFragment"
         android:label="fragment_comments"
         tools:layout="@layout/fragment_comments" />
+    <fragment
+        android:id="@+id/usersListFragment"
+        android:name="com.example.projekatmobilne.Fragments.UsersListFragment"
+        android:label="fragment_users_list"
+        tools:layout="@layout/fragment_users_list" />
 </navigation>

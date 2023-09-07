@@ -5,15 +5,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResult
 import com.example.projekatmobilne.databinding.FragmentAddMarkerBinding
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.ViewModelProvider
 import com.example.projekatmobilne.DataClasses.Apartman
 import com.example.projekatmobilne.DataClasses.User
 import com.example.projekatmobilne.ViewModel.AddApartmentViewModel
+import com.example.projekatmobilne.ViewModel.AddCommentViewModel
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -22,6 +21,7 @@ import com.google.firebase.auth.FirebaseUser
 class AddMarkerFragment : Fragment()  {
 
    private lateinit var viewModel : AddApartmentViewModel
+   private lateinit var commentViewModel : AddCommentViewModel
    private lateinit var binding: FragmentAddMarkerBinding
    private lateinit var latLng : String
    private lateinit var currentUser: User
@@ -67,10 +67,13 @@ class AddMarkerFragment : Fragment()  {
                  email = binding.ptEmailKontakt.text.toString(),
                  latlng = parseLatLngFromString(latLng),
                  verifikacioniKod = binding.idVerKod.text.toString(),
+                 prosecnaOcena = 0.0,
+                 listaOcena = mutableListOf(),
                  user = currentUser
             )
 
             viewModel.dodajApartman(noviApartman)
+            commentViewModel.azuriranjePoena(currentUser.email.toString(), 6)
         }
     }
 

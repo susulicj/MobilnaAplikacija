@@ -1,8 +1,7 @@
 package com.example.projekatmobilne.DataClasses
 
-import android.widget.EditText
 import com.google.android.gms.maps.model.LatLng
-import com.google.firebase.auth.FirebaseUser
+
 
 data class Apartman(
     val adresa: String? = null,
@@ -12,5 +11,7 @@ data class Apartman(
     val email: String? = null,
     val latlng: LatLng? = null,
     val verifikacioniKod: String,
+    val prosecnaOcena: Double? = null,
+    var listaOcena: MutableList<Int>? = mutableListOf(),
     val user: User? = null,
 )

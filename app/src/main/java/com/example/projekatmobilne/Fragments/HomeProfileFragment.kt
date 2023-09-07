@@ -30,6 +30,10 @@ class HomeProfileFragment : Fragment() {
             it.findNavController().navigate(R.id.action_homeProfileFragment_to_mapsFragment)
         }
 
+        binding.btnListaKorsnika.setOnClickListener{
+            it.findNavController().navigate(R.id.action_homeProfileFragment_to_usersListFragment)
+        }
+
 
 
         return binding.root

@@ -38,7 +38,7 @@ class RegisterViewModel : ViewModel() {
                 if (task.isSuccessful) {
                     val user = auth.currentUser
                     if (user != null) {
-                        val newUser = User(email, korisnickoIme, imeIprezime, brojTelefona)
+                        val newUser = User(email, korisnickoIme, imeIprezime, brojTelefona, 0)
                         database.child(korisnickoIme).setValue(newUser)
                                  .addOnSuccessListener {
                                       _registrationStatus.value = true

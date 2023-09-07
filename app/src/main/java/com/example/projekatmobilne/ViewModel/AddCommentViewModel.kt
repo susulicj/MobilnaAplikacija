@@ -8,15 +8,63 @@ import com.example.projekatmobilne.DataClasses.Apartman
 import com.example.projekatmobilne.DataClasses.Comment
 import com.example.projekatmobilne.DataClasses.User
 import com.google.android.gms.maps.model.LatLng
+import com.google.firebase.auth.FirebaseUser
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
-import kotlinx.coroutines.tasks.await
 
 class AddCommentViewModel : ViewModel() {
     private val database = FirebaseFirestore.getInstance()
     private val komentarRef = database.collection("komentari")
     private val commentListLiveData = MutableLiveData<List<Comment>>()
     private val commentFetchingStatusLiveData = MutableLiveData<Boolean>()
+    private val usersRef = FirebaseDatabase.getInstance().getReference("Users")
+
+
+    private val _updatePointsResult = MutableLiveData<Boolean>()
+    val updatePointsResult: LiveData<Boolean> get() = _updatePointsResult
+
+    fun azuriranjePoena(email: String, pointsToAdd: Int) {
+
+        val query = usersRef.orderByChild("email").equalTo(email)
+
+        query.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+
+                    for (userSnapshot in dataSnapshot.children) {
+                        val user = userSnapshot.getValue(User::class.java)
+                        if (user != null) {
+
+                            val currentPoints = user.poeni ?: 0
+                            val newPoints = currentPoints + pointsToAdd
+                            userSnapshot.child("poeni").ref.setValue(newPoints)
+                                .addOnSuccessListener {
+
+                                    _updatePointsResult.value = true
+                                }
+                                .addOnFailureListener { exception ->
+
+                                    _updatePointsResult.value = false
+                                }
+                            return
+                        }
+                    }
+                } else {
+
+                    _updatePointsResult.value = false
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+
+                _updatePointsResult.value = false
+            }
+        })
+    }
 
     fun getIsFetchingLiveData(): LiveData<Boolean> {
         return commentFetchingStatusLiveData
@@ -82,9 +130,10 @@ class AddCommentViewModel : ViewModel() {
         val korisnickoIme = userMap["korisnickoIme"] as String?
         val ImeiPrezime = userMap["ImeiPrezime"] as String?
         val brojTelefona = userMap["brojTelefona"] as String?
+        val poeni = userMap["poeni"] as Int?
 
         if (email != null) {
-            return User(email, korisnickoIme, ImeiPrezime, brojTelefona)
+            return User(email, korisnickoIme, ImeiPrezime, brojTelefona, poeni)
         } else {
             return null
         }
@@ -97,6 +146,8 @@ class AddCommentViewModel : ViewModel() {
         val brojTelefona = apartmanMap["brojTelefona"] as Long?
         val email = apartmanMap["email"] as String?
         val verifikacioniKod = apartmanMap["verifikacioniKod"] as String?
+        val prosecnaOcena = apartmanMap["prosecnaOcena"] as Double?
+        val listaOcena = apartmanMap["listaOcena"] as MutableList<Int>?
         val userMap = apartmanMap["user"] as Map<String, Any>?
 
 
@@ -112,11 +163,14 @@ class AddCommentViewModel : ViewModel() {
         val user = userMap?.let { createUserFromMap(it) }
 
         if (verifikacioniKod != null) {
-            return Apartman(adresa, povrsina, brojSoba, brojTelefona, email, latlng, verifikacioniKod, user)
+            return Apartman(adresa, povrsina, brojSoba, brojTelefona, email, latlng, verifikacioniKod,prosecnaOcena, listaOcena, user)
         } else {
             return null
         }
     }
+
+
+
 
 
 
