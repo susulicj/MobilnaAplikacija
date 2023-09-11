@@ -1,14 +1,18 @@
 package com.example.projekatmobilne.Fragments
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
+import android.location.LocationManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResult
@@ -42,6 +46,10 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     private var currentMarker: Marker? = null
     private lateinit var viewModel: AddApartmentViewModel
     private lateinit var viewModelshared: SharedViewModel
+    private val proximityDistance = 100.0 // Minimalna udaljenost za detekciju približavanja (u metrima)
+    private var locationListener: LocationListener? = null
+    private val targetLocations = mutableListOf<LatLng>()
+
 
 
     companion object{
@@ -54,6 +62,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
 
 
 
@@ -71,10 +80,39 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
 
+
+
         mMap = googleMap
         viewModelshared = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
         viewModel = ViewModelProvider(this).get(AddApartmentViewModel::class.java)
         mMap.uiSettings.isZoomControlsEnabled = true
+
+
+
+        viewModel.preuzmiSveApartmane{listaApartmana ->
+            for(apartman in listaApartmana){
+              targetLocations.add(apartman.latlng!!)
+
+            }
+        }
+
+        // Nakon inicijalizacije mape
+        if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // Provjerite lokaciju korisnika i udaljenost do ciljanih lokacija
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                if (location != null) {
+                    val currentLatLng = LatLng(location.latitude, location.longitude)
+                    for (targetLocation in targetLocations) {
+                        val distance = calculateDistance(currentLatLng, targetLocation)
+                        if (distance <= proximityDistance) {
+                            // Korisnik se približio ciljanoj lokaciji, prikažite Toast poruku
+                            Toast.makeText(requireContext(), "Približavate se ciljanoj lokaciji!", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            }
+        }
+
 
         if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
         {
@@ -88,7 +126,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
             if (location != null) {
                 lastLocation = location
                 val currentLatLng = LatLng(location.latitude, location.longitude)
-                placeMarkerOnMap(currentLatLng)
+                //placeMarkerOnMap(currentLatLng)
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12f))
             }
         }
@@ -98,7 +136,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
             override fun onLocationResult(locationResult: LocationResult) {
                 locationResult.lastLocation?.let { location ->
                     val currentLatLng = LatLng(location.latitude, location.longitude)
-                    placeMarkerOnMap(currentLatLng)
+                    //placeMarkerOnMap(currentLatLng)
                 }
             }
         }
@@ -123,7 +161,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
             }
         }
 
-        mMap.setOnMarkerClickListener{marker->
+         mMap.setOnMarkerClickListener{marker->
 
             val clickedApartman = marker.tag as? Apartman
             Log.d("apartman kliknutii", "$clickedApartman")
@@ -138,6 +176,18 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         }
 
 
+    }
+
+    private fun calculateDistance(latLng1: LatLng, latLng2: LatLng): Float {
+        val location1 = Location("Location1")
+        location1.latitude = latLng1.latitude
+        location1.longitude = latLng1.longitude
+
+        val location2 = Location("Location2")
+        location2.latitude = latLng2.latitude
+        location2.longitude = latLng2.longitude
+
+        return location1.distanceTo(location2)
     }
 
     private fun MapClickListener(){
@@ -163,6 +213,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
             currentMarker?.position = currentLatLng
         }
     }
+
+
 }
 
 

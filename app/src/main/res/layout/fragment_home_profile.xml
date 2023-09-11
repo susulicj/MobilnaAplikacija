@@ -15,21 +15,22 @@
         android:textSize="60sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.462"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.112" />
+        app:layout_constraintVertical_bias="0.055" />
 
     <Button
         android:id="@+id/btnmapa"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Mapa"
+        android:text="Prikazi"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.776"
+        app:layout_constraintHorizontal_bias="0.864"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.866" />
+        app:layout_constraintVertical_bias="0.691" />
 
     <Button
         android:id="@+id/btnListaKorsnika"
@@ -42,4 +43,105 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.866" />
+
+    <Button
+        android:id="@+id/btnDodajStan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Dodaj stan"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.131"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.78" />
+
+    <TextView
+        android:id="@+id/tvIzaberiPrikaz"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Izaberi prikaz:"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.111"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.312" />
+
+    <RadioGroup
+        android:id="@+id/radioGroup"
+        android:layout_width="112dp"
+        android:layout_height="106dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.123"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.433">
+
+        <RadioButton
+            android:id="@+id/radioButton2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Lista" />
+
+        <RadioButton
+            android:id="@+id/radioButton1"
+            android:layout_width="80dp"
+            android:layout_height="wrap_content"
+            android:text="Mapa" />
+    </RadioGroup>
+
+    <RadioGroup
+        android:id="@+id/radioGroupFiltriranje"
+        android:layout_width="154dp"
+        android:layout_height="115dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.601"
+        app:layout_constraintStart_toEndOf="@+id/radioGroup"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.439">
+
+        <RadioButton
+            android:id="@+id/IDbezFiltriranja"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Bez filtriranja" />
+
+        <RadioButton
+            android:id="@+id/IDPoKorisniku"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Po korisniku " />
+    </RadioGroup>
+
+    <TextView
+        android:id="@+id/idFiltriranje"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Filtriranje"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/radioGroupFiltriranje"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.331"
+        app:layout_constraintStart_toEndOf="@+id/tvIzaberiPrikaz"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.905" />
+
+    <EditText
+        android:id="@+id/ptFilter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:ems="10"
+        android:hint="Filter"
+        android:inputType="textPersonName"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.427"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.602" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>

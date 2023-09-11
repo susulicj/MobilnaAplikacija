@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.projekatmobilne.DataClasses.Apartman
 import com.example.projekatmobilne.DataClasses.Comment
 import com.example.projekatmobilne.DataClasses.User
@@ -15,6 +16,9 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.QuerySnapshot
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class AddCommentViewModel : ViewModel() {
     private val database = FirebaseFirestore.getInstance()
@@ -90,15 +94,18 @@ class AddCommentViewModel : ViewModel() {
             }
     }
 
-    fun getComments(verifikacioniKodApartman: String) {
+    /*fun getComments(verifikacioniKodApartman: String) {
         commentFetchingStatusLiveData.postValue(true)
 
-        database.collection("komentari")
-            .whereEqualTo("verifikacioniKodApartman", verifikacioniKodApartman)
-            .get()
-            .addOnSuccessListener { querySnapshot: QuerySnapshot? ->
+        viewModelScope.launch(Dispatchers.IO) {
+            try {
+                val querySnapshot = database.collection("komentari")
+                    .whereEqualTo("verifikacioniKodApartman", verifikacioniKodApartman)
+                    .get()
+                    .await()
+
                 val commentList = mutableListOf<Comment>()
-                querySnapshot?.forEach { document ->
+                querySnapshot.forEach { document ->
                     val commentData = document.data
                     val tekst = commentData["tekst"] as String?
                     val userMap = commentData["user"] as Map<String, Any>?
@@ -114,11 +121,53 @@ class AddCommentViewModel : ViewModel() {
 
                     commentList.add(comment)
                 }
+
+                setCommentList(commentList)
+                commentFetchingStatusLiveData.postValue(false)
+                Log.d("apartman", "Komentari su dohvaćeni: $commentList")
+            } catch (e: Exception) {
+                commentFetchingStatusLiveData.postValue(false)
+                // Handle exceptions here
+            }
+        }
+    }*/
+
+    fun getComments(verifikacioniKodApartman: String) {
+        commentFetchingStatusLiveData.postValue(true)
+
+        val query = database.collection("komentari")
+            .whereEqualTo("verifikacioniKodApartman", verifikacioniKodApartman)
+
+        query.get()
+            .addOnSuccessListener { querySnapshot ->
+                val commentList = mutableListOf<Comment>()
+                querySnapshot.forEach { document ->
+                    val commentData = document.data
+                    val tekst = commentData["tekst"] as String?
+                    val userMap = commentData["user"] as Map<String, Any>?
+                    val apartmanMap = commentData["apartman"] as Map<String, Any>?
+                    val verifikacioniKod = commentData["verifikacioniKodApartman"] as String?
+
+                    val comment = Comment(
+                        tekst = tekst,
+                        user = userMap?.let { createUserFromMap(it) },
+                        apartman = apartmanMap?.let { createApartmanFromMap(it) },
+                        verifikacioniKodApartman = verifikacioniKod
+                    )
+
+                    commentList.add(comment)
+                }
+
                 setCommentList(commentList)
                 commentFetchingStatusLiveData.postValue(false)
                 Log.d("apartman", "Komentari su dohvaćeni: $commentList")
             }
+            .addOnFailureListener { e ->
+                commentFetchingStatusLiveData.postValue(false)
+                // Handle exceptions here
+            }
     }
+
 
     fun getCommentListLiveData(): LiveData<List<Comment>> {
         Log.d("apartman", "Komentari su : ${commentListLiveData.value}")

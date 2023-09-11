@@ -3,12 +3,16 @@ package com.example.projekatmobilne.ViewModel
 import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.projekatmobilne.DataClasses.Apartman
 import com.example.projekatmobilne.DataClasses.Comment
+import com.example.projekatmobilne.DataClasses.User
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 
 class AddApartmentViewModel : ViewModel() {
     private val database  = FirebaseFirestore.getInstance()
@@ -39,41 +43,41 @@ class AddApartmentViewModel : ViewModel() {
             }
     }
 
-    fun preuzmiSveApartmane(callback: (List<Apartman>) -> Unit) {
-        apartmanRef.addSnapshotListener { querySnapshot, firebaseFirestoreException ->
-            if (firebaseFirestoreException != null) {
+   /* fun preuzmiSveApartmane(callback: (List<Apartman>) -> Unit) {
+        viewModelScope.launch {
+            try {
+                val querySnapshot = apartmanRef.get().await()
 
-                println("Greska prilikom osluskivanja promena: $firebaseFirestoreException")
-                callback(emptyList())
-                return@addSnapshotListener
-            }
+                val listaApartmana = mutableListOf<Apartman>()
+                for (document in querySnapshot.documents) {
+                    val podaciApartmana = document.data
 
-            val listaApartmana = mutableListOf<Apartman>()
-            for (document in querySnapshot!!.documents) {
-                val podaciApartmana = document.data
+                    val latlngData = podaciApartmana?.get("latlng") as? HashMap<String, Double>
 
-                val latlngData = podaciApartmana!!["latlng"] as? HashMap<String, Double>
+                    if (latlngData != null && latlngData.containsKey("latitude") && latlngData.containsKey("longitude")) {
+                        val latitude = latlngData["latitude"]!!
+                        val longitude = latlngData["longitude"]!!
+                        val latLng = LatLng(latitude, longitude)
 
-                if (latlngData != null && latlngData.containsKey("latitude") && latlngData.containsKey("longitude")) {
-                    val latitude = latlngData["latitude"]!!
-                    val longitude = latlngData["longitude"]!!
-                    val latLng = LatLng(latitude, longitude)
-
-                    val apartman = Apartman(
-                        podaciApartmana!!["adresa"] as String,
-                        podaciApartmana["povrsina"] as Double,
-                        podaciApartmana["brojSoba"] as Long,
-                        podaciApartmana["brojTelefona"] as Long,
-                        podaciApartmana["email"] as String,
-                        latLng,
-                        podaciApartmana["verifikacioniKod"] as String
-                    )
-                    listaApartmana.add(apartman)
+                        val apartman = Apartman(
+                            podaciApartmana["adresa"] as String,
+                            podaciApartmana["povrsina"] as Double,
+                            podaciApartmana["brojSoba"] as Long,
+                            podaciApartmana["brojTelefona"] as Long,
+                            podaciApartmana["email"] as String,
+                            latLng,
+                            podaciApartmana["verifikacioniKod"] as String
+                        )
+                        listaApartmana.add(apartman)
+                    }
                 }
+                callback(listaApartmana)
+            } catch (e: Exception) {
+                println("Greska prilikom izvršavanja upita: $e")
+                callback(emptyList())
             }
-            callback(listaApartmana)
         }
-    }
+    }*/
 
   fun dodajOcenuApartmanu(apartmanID: String, novaOcena: Int){
       apartmanRef.document(apartmanID).update("listaOcena", FieldValue.arrayUnion(novaOcena))
@@ -86,6 +90,62 @@ class AddApartmentViewModel : ViewModel() {
           }
 
   }
+
+    fun preuzmiSveApartmane(callback: (List<Apartman>) -> Unit) {
+        try {
+            apartmanRef.get()
+                .addOnSuccessListener { querySnapshot ->
+                    val listaApartmana = mutableListOf<Apartman>()
+                    for (document in querySnapshot.documents) {
+                        val podaciApartmana = document.data
+
+                        val latlngData = podaciApartmana?.get("latlng") as? HashMap<String, Double>
+
+                        if (latlngData != null && latlngData.containsKey("latitude") && latlngData.containsKey("longitude")) {
+                            val latitude = latlngData["latitude"]!!
+                            val longitude = latlngData["longitude"]!!
+                            val latLng = LatLng(latitude, longitude)
+
+                            val userData = podaciApartmana["user"] as HashMap<String, Any>?
+                            val user: User? = if (userData != null) {
+                                User(
+                                    email = userData["email"] as String?,
+                                    korisnickoIme = userData["korisnickoIme"] as String?,
+                                    ImeiPrezime = userData["ImeiPrezime"] as String?,
+                                    brojTelefona = userData["brojTelefona"] as String?,
+                                    poeni = userData["poeni"] as Int?
+                                )
+                            } else {
+                                null // Ako nema podataka o korisniku
+                            }
+
+                            val apartman = Apartman(
+                                podaciApartmana["adresa"] as String,
+                                podaciApartmana["povrsina"] as Double,
+                                podaciApartmana["brojSoba"] as Long,
+                                podaciApartmana["brojTelefona"] as Long,
+                                podaciApartmana["email"] as String,
+                                latLng,
+                                podaciApartmana["verifikacioniKod"] as String,
+                                podaciApartmana["posecnaOcena"] as Double?,
+                                podaciApartmana["listaOcena"] as MutableList<Int>?,
+                                user
+                            )
+                            listaApartmana.add(apartman)
+                        }
+                    }
+                    callback(listaApartmana)
+                }
+                .addOnFailureListener { e ->
+                    println("Greska prilikom izvršavanja upita: $e")
+                    callback(emptyList())
+                }
+        } catch (e: Exception) {
+            println("Greska prilikom izvršavanja upita: $e")
+            callback(emptyList())
+        }
+    }
+
 
 
     fun azuriranjeProsecneOcene(apartmanID: String, callback: (Double) -> Unit) {

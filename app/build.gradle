@@ -52,6 +52,7 @@ dependencies {
     implementation 'com.google.android.gms:play-services-maps:18.0.2'
     implementation 'com.google.android.gms:play-services-location:21.0.1'
     implementation 'androidx.core:core-ktx:+'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9'
 
 
     def nav_version = "2.5.0"

@@ -16,6 +16,12 @@
         <action
             android:id="@+id/action_homeProfileFragment_to_usersListFragment"
             app:destination="@id/usersListFragment" />
+        <action
+            android:id="@+id/action_homeProfileFragment_to_addMarkerFragment"
+            app:destination="@id/addMarkerFragment" />
+        <action
+            android:id="@+id/action_homeProfileFragment_to_apartmanListFragment"
+            app:destination="@id/apartmanListFragment" />
     </fragment>
     <fragment
         android:id="@+id/mapsFragment"
@@ -44,4 +50,9 @@
         android:name="com.example.projekatmobilne.Fragments.UsersListFragment"
         android:label="fragment_users_list"
         tools:layout="@layout/fragment_users_list" />
+    <fragment
+        android:id="@+id/apartmanListFragment"
+        android:name="com.example.projekatmobilne.Fragments.ApartmanListFragment"
+        android:label="fragment_apartman_list"
+        tools:layout="@layout/fragment_apartman_list" />
 </navigation>

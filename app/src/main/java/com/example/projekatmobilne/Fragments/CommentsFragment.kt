@@ -137,9 +137,9 @@ class CommentsFragment : Fragment() {
 
             commentViewModel.getComments(kliknutiApartman!!.verifikacioniKod)
 
-            commentViewModel.getIsFetchingLiveData().observe(this, Observer { fetchingStatus ->
+            commentViewModel.getIsFetchingLiveData().observe(viewLifecycleOwner, Observer { fetchingStatus ->
                 if (!fetchingStatus) {
-                    commentViewModel.getCommentListLiveData().observe(this, Observer { commentList ->
+                    commentViewModel.getCommentListLiveData().observe(viewLifecycleOwner, Observer { commentList ->
                         if (commentList != null) {
                             Log.d("apartman", "Komentari : $commentList")
                             val myAdapter = MyRecyclerViewAdapter(commentList)
@@ -148,6 +148,7 @@ class CommentsFragment : Fragment() {
                     })
                 }
             })
+
         })
 
 
