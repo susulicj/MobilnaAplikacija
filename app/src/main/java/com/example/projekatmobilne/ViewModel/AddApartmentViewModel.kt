@@ -30,6 +30,7 @@ class AddApartmentViewModel : ViewModel() {
             "verifikacioniKod" to apartman.verifikacioniKod,
             "prosecnaOcena" to apartman.prosecnaOcena,
             "listaOcena" to apartman.listaOcena,
+            "sprat" to apartman.sprat,
             "user" to apartman.user,
 
         )
@@ -129,6 +130,7 @@ class AddApartmentViewModel : ViewModel() {
                                 podaciApartmana["verifikacioniKod"] as String,
                                 podaciApartmana["posecnaOcena"] as Double?,
                                 podaciApartmana["listaOcena"] as MutableList<Int>?,
+                                podaciApartmana["sprat"] as Long?,
                                 user
                             )
                             listaApartmana.add(apartman)

@@ -14,14 +14,13 @@ import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat.getSystemService
 import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResult
-import androidx.fragment.app.setFragmentResultListener
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.*
+import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.example.projekatmobilne.DataClasses.Apartman
+import com.example.projekatmobilne.MyRecyclerViewAdapterApartman
 import com.example.projekatmobilne.R
 import com.example.projekatmobilne.ViewModel.AddApartmentViewModel
 import com.example.projekatmobilne.ViewModel.CommentViewModel
@@ -31,6 +30,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
@@ -46,9 +46,10 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     private var currentMarker: Marker? = null
     private lateinit var viewModel: AddApartmentViewModel
     private lateinit var viewModelshared: SharedViewModel
-    private val proximityDistance = 100.0 // Minimalna udaljenost za detekciju približavanja (u metrima)
+    private val proximityDistance = 1000000.0 // Minimalna udaljenost za detekciju približavanja (u metrima)
     private var locationListener: LocationListener? = null
     private val targetLocations = mutableListOf<LatLng>()
+    val sharedViewModel : SharedViewModel by activityViewModels()
 
 
 
@@ -96,22 +97,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
             }
         }
 
-        // Nakon inicijalizacije mape
-        if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            // Provjerite lokaciju korisnika i udaljenost do ciljanih lokacija
-            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
-                if (location != null) {
-                    val currentLatLng = LatLng(location.latitude, location.longitude)
-                    for (targetLocation in targetLocations) {
-                        val distance = calculateDistance(currentLatLng, targetLocation)
-                        if (distance <= proximityDistance) {
-                            // Korisnik se približio ciljanoj lokaciji, prikažite Toast poruku
-                            Toast.makeText(requireContext(), "Približavate se ciljanoj lokaciji!", Toast.LENGTH_SHORT).show()
-                        }
-                    }
-                }
-            }
-        }
 
 
         if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
@@ -120,16 +105,20 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
             return
         }
 
+
+
+
         mMap.isMyLocationEnabled = true
 
-        fusedLocationClient.lastLocation.addOnSuccessListener(requireActivity()) { location ->
+       /* fusedLocationClient.lastLocation.addOnSuccessListener(requireActivity()) { location ->
             if (location != null) {
                 lastLocation = location
                 val currentLatLng = LatLng(location.latitude, location.longitude)
                 //placeMarkerOnMap(currentLatLng)
                 mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12f))
             }
-        }
+        }*/
+
 
         //obrada promena
         locationCallback = object : LocationCallback() {
@@ -150,18 +139,92 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
         fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
 
-        MapClickListener()
 
-        viewModel.preuzmiSveApartmane{listaApartmana ->
+
+        /*viewModel.preuzmiSveApartmane{listaApartmana ->
             for(apartman in listaApartmana){
                 Log.d("apartman kliknuti", "${apartman.latlng}")
                 val marker = mMap.addMarker(MarkerOptions().position(apartman.latlng!!).title(apartman.adresa))
                 marker?.tag = apartman
 
             }
-        }
+        }*/
 
-         mMap.setOnMarkerClickListener{marker->
+        sharedViewModel.getListaApartmana()?.observe(viewLifecycleOwner, Observer { listaApartmana ->
+
+            val targetMarkers = mutableListOf<Marker>()
+
+            for(apartman in listaApartmana){
+                Log.d("filterrr", "${apartman.latlng}")
+                val marker = mMap.addMarker( MarkerOptions()
+                    .position(apartman.latlng!!)
+                    .title(apartman.adresa)
+                    .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                )
+                marker?.tag = apartman
+                targetMarkers.add(marker!!)
+
+            }
+
+            fusedLocationClient.lastLocation.addOnSuccessListener(requireActivity()) { location ->
+                if (location != null) {
+                    val currentLatLng = LatLng(location.latitude, location.longitude)
+                    // Postavi trenutnu lokaciju na mapu i animiraj kameru
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatLng, 12f))
+
+                    // Proveri približavanje ciljanim lokacijama
+                    for (targetLocation in listaApartmana) {
+                        Log.d("targetttt", "$targetLocation")
+                        val distance = calculateDistance(currentLatLng, targetLocation.latlng!!)
+                        if (distance <= proximityDistance) {
+                            // Korisnik se približio ciljanoj lokaciji, prikažite Toast poruku
+                            Toast.makeText(requireContext(), "Približavate se ${targetLocation}!", Toast.LENGTH_SHORT).show()
+                            for (marker in targetMarkers) {
+                                val markerLatLng = marker.position
+                                if (markerLatLng == targetLocation.latlng) {
+                                    // Promenite boju markera na žutu ako se LatLng poklapaju
+                                    marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
+                                }
+                            }
+
+                        }
+                    }
+                } else {
+                    // Trenutna lokacija nije dostupna, možete obavestiti korisnika o tome
+                    Toast.makeText(requireContext(), "Trenutna lokacija nije dostupna.", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+
+            // Obrada promena
+           /* locationCallback = object : LocationCallback() {
+                override fun onLocationResult(locationResult: LocationResult) {
+                    locationResult.lastLocation?.let { location ->
+                        val currentLatLng = LatLng(location.latitude, location.longitude)
+
+                        // Proveri približavanje ciljanim lokacijama
+                        for (targetLocation in listaApartmana) {
+                            Log.d("targetttt", "$targetLocation")
+                            val distance = calculateDistance(currentLatLng, targetLocation.latlng!!)
+                            if (distance <= proximityDistance) {
+                                // Korisnik se približio ciljanoj lokaciji, promeni boju markera u žutu
+                                for (marker in targetMarkers) {
+                                    val markerLatLng = marker.position
+                                    if (markerLatLng == targetLocation.latlng) {
+                                        marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }*/
+
+
+
+        })
+
+           mMap.setOnMarkerClickListener{marker->
 
             val clickedApartman = marker.tag as? Apartman
             Log.d("apartman kliknutii", "$clickedApartman")
@@ -174,6 +237,24 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
             true
         }
+
+
+        // Nakon inicijalizacije mape
+       /* if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            // Provjerite lokaciju korisnika i udaljenost do ciljanih lokacija
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                if (location != null) {
+                    val currentLatLng = LatLng(location.latitude, location.longitude)
+                    for (targetLocation in targetLocations) {
+                        val distance = calculateDistance(currentLatLng, targetLocation)
+                        if (distance <= proximityDistance) {
+                            // Korisnik se približio ciljanoj lokaciji, prikažite Toast poruku
+                            Toast.makeText(requireContext(), "Približavate se ${targetLocation}!", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+                }
+            }
+        }*/
 
 
     }
@@ -190,7 +271,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         return location1.distanceTo(location2)
     }
 
-    private fun MapClickListener(){
+    /*private fun MapClickListener(){
 
         mMap.setOnMapClickListener {latLng->
 
@@ -202,7 +283,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
 
         }
-    }
+    }*/
 
     private fun placeMarkerOnMap(currentLatLng: LatLng) {
         if (currentMarker == null) {

@@ -1,5 +1,6 @@
 package com.example.projekatmobilne.DataClasses
 
+import android.os.Parcelable
 import com.google.android.gms.maps.model.LatLng
 
 
@@ -13,5 +14,6 @@ data class Apartman(
     val verifikacioniKod: String,
     val prosecnaOcena: Double? = null,
     var listaOcena: MutableList<Int>? = mutableListOf(),
+    val sprat: Long? = null,
     val user: User? = null,
 )

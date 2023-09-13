@@ -30,7 +30,7 @@
         app:layout_constraintHorizontal_bias="0.864"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.691" />
+        app:layout_constraintVertical_bias="0.796" />
 
     <Button
         android:id="@+id/btnListaKorsnika"
@@ -39,10 +39,10 @@
         android:text="Lista korisnika"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.149"
+        app:layout_constraintHorizontal_bias="0.064"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.866" />
+        app:layout_constraintVertical_bias="0.925" />
 
     <Button
         android:id="@+id/btnDodajStan"
@@ -51,10 +51,10 @@
         android:text="Dodaj stan"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.131"
+        app:layout_constraintHorizontal_bias="0.847"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.78" />
+        app:layout_constraintVertical_bias="0.925" />
 
     <TextView
         android:id="@+id/tvIzaberiPrikaz"
@@ -95,14 +95,14 @@
 
     <RadioGroup
         android:id="@+id/radioGroupFiltriranje"
-        android:layout_width="154dp"
-        android:layout_height="115dp"
+        android:layout_width="178dp"
+        android:layout_height="219dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.601"
+        app:layout_constraintHorizontal_bias="0.675"
         app:layout_constraintStart_toEndOf="@+id/radioGroup"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.439">
+        app:layout_constraintVertical_bias="0.466">
 
         <RadioButton
             android:id="@+id/IDbezFiltriranja"
@@ -111,10 +111,22 @@
             android:text="Bez filtriranja" />
 
         <RadioButton
+            android:id="@+id/IDrbSprat"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Po spratu " />
+
+        <RadioButton
             android:id="@+id/IDPoKorisniku"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Po korisniku " />
+
+        <RadioButton
+            android:id="@+id/IDrbRadius"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Po radijusu" />
     </RadioGroup>
 
     <TextView
@@ -125,10 +137,10 @@
         android:textSize="20sp"
         app:layout_constraintBottom_toTopOf="@+id/radioGroupFiltriranje"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.331"
+        app:layout_constraintHorizontal_bias="0.274"
         app:layout_constraintStart_toEndOf="@+id/tvIzaberiPrikaz"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.905" />
+        app:layout_constraintVertical_bias="0.913" />
 
     <EditText
         android:id="@+id/ptFilter"
@@ -137,11 +149,12 @@
         android:ems="10"
         android:hint="Filter"
         android:inputType="textPersonName"
+        android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.427"
+        app:layout_constraintHorizontal_bias="0.363"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.602" />
+        app:layout_constraintVertical_bias="0.711" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

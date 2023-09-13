@@ -115,6 +115,7 @@ class AddMarkerFragment : Fragment()  {
                  verifikacioniKod = binding.idVerKod.text.toString(),
                  prosecnaOcena = 0.0,
                  listaOcena = mutableListOf(),
+                 sprat = binding.ptSprat.text.toString().toLong(),
                  user = currentUser
             )
 

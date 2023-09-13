@@ -197,6 +197,7 @@ class AddCommentViewModel : ViewModel() {
         val verifikacioniKod = apartmanMap["verifikacioniKod"] as String?
         val prosecnaOcena = apartmanMap["prosecnaOcena"] as Double?
         val listaOcena = apartmanMap["listaOcena"] as MutableList<Int>?
+        val sprat = apartmanMap["sprat"] as Long?
         val userMap = apartmanMap["user"] as Map<String, Any>?
 
 
@@ -212,7 +213,7 @@ class AddCommentViewModel : ViewModel() {
         val user = userMap?.let { createUserFromMap(it) }
 
         if (verifikacioniKod != null) {
-            return Apartman(adresa, povrsina, brojSoba, brojTelefona, email, latlng, verifikacioniKod,prosecnaOcena, listaOcena, user)
+            return Apartman(adresa, povrsina, brojSoba, brojTelefona, email, latlng, verifikacioniKod,prosecnaOcena, listaOcena, sprat, user)
         } else {
             return null
         }
