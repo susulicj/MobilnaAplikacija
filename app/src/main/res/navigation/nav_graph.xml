@@ -14,14 +14,14 @@
             android:id="@+id/action_homeProfileFragment_to_mapsFragment"
             app:destination="@id/mapsFragment" />
         <action
-            android:id="@+id/action_homeProfileFragment_to_usersListFragment"
-            app:destination="@id/usersListFragment" />
-        <action
             android:id="@+id/action_homeProfileFragment_to_addMarkerFragment"
             app:destination="@id/addMarkerFragment" />
         <action
             android:id="@+id/action_homeProfileFragment_to_apartmanListFragment"
             app:destination="@id/apartmanListFragment" />
+        <action
+            android:id="@+id/action_homeProfileFragment_to_userProfileFragment"
+            app:destination="@id/userProfileFragment" />
     </fragment>
     <fragment
         android:id="@+id/mapsFragment"
@@ -44,7 +44,11 @@
         android:id="@+id/commentsFragment"
         android:name="com.example.projekatmobilne.Fragments.CommentsFragment"
         android:label="fragment_comments"
-        tools:layout="@layout/fragment_comments" />
+        tools:layout="@layout/fragment_comments" >
+        <action
+            android:id="@+id/action_commentsFragment_to_podaciApartmanFragment"
+            app:destination="@id/podaciApartmanFragment" />
+    </fragment>
     <fragment
         android:id="@+id/usersListFragment"
         android:name="com.example.projekatmobilne.Fragments.UsersListFragment"
@@ -55,4 +59,18 @@
         android:name="com.example.projekatmobilne.Fragments.ApartmanListFragment"
         android:label="fragment_apartman_list"
         tools:layout="@layout/fragment_apartman_list" />
+    <fragment
+        android:id="@+id/userProfileFragment"
+        android:name="com.example.projekatmobilne.Fragments.UserProfileFragment"
+        android:label="fragment_user_profile"
+        tools:layout="@layout/fragment_user_profile" >
+        <action
+            android:id="@+id/action_userProfileFragment_to_usersListFragment"
+            app:destination="@id/usersListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/podaciApartmanFragment"
+        android:name="com.example.projekatmobilne.Fragments.PodaciApartmanFragment"
+        android:label="fragment_podaci_apartman"
+        tools:layout="@layout/fragment_podaci_apartman" />
 </navigation>

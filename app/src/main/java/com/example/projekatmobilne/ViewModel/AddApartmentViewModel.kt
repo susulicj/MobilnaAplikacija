@@ -112,7 +112,7 @@ class AddApartmentViewModel : ViewModel() {
                                 User(
                                     email = userData["email"] as String?,
                                     korisnickoIme = userData["korisnickoIme"] as String?,
-                                    ImeiPrezime = userData["ImeiPrezime"] as String?,
+                                    imeiPrezime = userData["ImeiPrezime"] as String?,
                                     brojTelefona = userData["brojTelefona"] as String?,
                                     poeni = userData["poeni"] as Int?
                                 )

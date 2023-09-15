@@ -6,6 +6,7 @@ import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
 import android.os.Bundle
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -50,6 +51,8 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     private var locationListener: LocationListener? = null
     private val targetLocations = mutableListOf<LatLng>()
     val sharedViewModel : SharedViewModel by activityViewModels()
+    private val requestingLocationUpdates = true // Set this to true if you want to start location updates initially
+    private lateinit var locationRequest: LocationRequest
 
 
 
@@ -76,6 +79,22 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         mapFragment?.getMapAsync(this)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
 
+        locationCallback = object : LocationCallback() {
+            override fun onLocationResult(locationResult: LocationResult) {
+                locationResult.lastLocation?.let { location ->
+                    val currentLatLng = LatLng(location.latitude, location.longitude)
+
+                }
+            }
+        }
+
+        locationRequest = LocationRequest.create().apply {
+            interval = 2000 // Set the update interval (in milliseconds) as per your requirements
+            fastestInterval = 1000 // Set the fastest update interval
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+        }
+
+
 
     }
 
@@ -87,6 +106,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         viewModelshared = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
         viewModel = ViewModelProvider(this).get(AddApartmentViewModel::class.java)
         mMap.uiSettings.isZoomControlsEnabled = true
+
 
 
 
@@ -137,7 +157,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
             .build()
 
 
-        fusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null)
+
 
 
 
@@ -166,7 +186,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
             }
 
-            fusedLocationClient.lastLocation.addOnSuccessListener(requireActivity()) { location ->
+           /* fusedLocationClient.lastLocation.addOnSuccessListener(requireActivity()) { location ->
                 if (location != null) {
                     val currentLatLng = LatLng(location.latitude, location.longitude)
                     // Postavi trenutnu lokaciju na mapu i animiraj kameru
@@ -193,34 +213,53 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
                     // Trenutna lokacija nije dostupna, možete obavestiti korisnika o tome
                     Toast.makeText(requireContext(), "Trenutna lokacija nije dostupna.", Toast.LENGTH_SHORT).show()
                 }
-            }
+            }*/
 
 
+            //kad se korisniku poklopi lokacija sa zadatom lokacijom da dobije 1 poen
             // Obrada promena
-           /* locationCallback = object : LocationCallback() {
+            locationCallback = object : LocationCallback() {
                 override fun onLocationResult(locationResult: LocationResult) {
                     locationResult.lastLocation?.let { location ->
                         val currentLatLng = LatLng(location.latitude, location.longitude)
 
-                        // Proveri približavanje ciljanim lokacijama
+                        val markeriZaBojenjeuZuto = mutableListOf<Marker>()
+
+
                         for (targetLocation in listaApartmana) {
                             Log.d("targetttt", "$targetLocation")
                             val distance = calculateDistance(currentLatLng, targetLocation.latlng!!)
                             if (distance <= proximityDistance) {
-                                // Korisnik se približio ciljanoj lokaciji, promeni boju markera u žutu
+                               // Toast.makeText(requireContext(), "Približavate se ${targetLocation}!", Toast.LENGTH_SHORT).show()
                                 for (marker in targetMarkers) {
                                     val markerLatLng = marker.position
                                     if (markerLatLng == targetLocation.latlng) {
-                                        marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
+                                        markeriZaBojenjeuZuto.add(marker)
+
+
+                                    }else{
+
+
                                     }
                                 }
                             }
                         }
+                        for (marker in targetMarkers) {
+                            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                        }
+
+
+                        for (marker in markeriZaBojenjeuZuto) {
+                            marker.setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW))
+                        }
+
+
+
                     }
                 }
-            }*/
+            }
 
-
+            startLocationUpdates()
 
         })
 
@@ -271,30 +310,23 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         return location1.distanceTo(location2)
     }
 
-    /*private fun MapClickListener(){
-
-        mMap.setOnMapClickListener {latLng->
-
-            val bundle = bundleOf("location" to latLng.toString())
-            setFragmentResult("location", bundle)
-            val action = MapsFragmentDirections.actionMapsFragmentToAddMarkerFragment()
-            view?.findNavController()?.navigate(action)
-
-
-
-        }
-    }*/
-
-    private fun placeMarkerOnMap(currentLatLng: LatLng) {
-        if (currentMarker == null) {
-            val markerOptions = MarkerOptions().position(currentLatLng)
-            markerOptions.title("You are here")
-            currentMarker = mMap.addMarker(markerOptions)
-        } else {
-            currentMarker?.position = currentLatLng
-        }
+    override fun onResume() {
+        super.onResume()
+        if (requestingLocationUpdates) startLocationUpdates()
     }
-
+    private fun startLocationUpdates() {
+        if (ActivityCompat.checkSelfPermission(requireActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(requireActivity(), arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), LOCATION_REQUEST_CODE)
+            return
+        }
+        fusedLocationClient.requestLocationUpdates(locationRequest,
+            locationCallback,
+            Looper.getMainLooper())
+    }
+    private fun stopLocationUpdates() {
+        fusedLocationClient.removeLocationUpdates(locationCallback)
+    }
 
 }
 

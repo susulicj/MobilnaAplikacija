@@ -20,7 +20,13 @@ class MyRecyclerViewAdapterApartman(private var apartmanList: List<Apartman>) : 
 
     override fun onBindViewHolder(holder: MyViewHolderApartman, position: Int) {
         val apartman: Apartman = apartmanList[position]
-        holder.myText.text = apartman.verifikacioniKod
+        holder.adresa.text = apartman.adresa
+        holder.povrsina.text = apartman.povrsina.toString()
+        holder.brojSoba.text = apartman.brojSoba.toString()
+        holder.brojTelefona.text = apartman.brojTelefona.toString()
+        holder.emaill.text = apartman.email
+        holder.sprat.text = apartman.sprat.toString()
+
     }
 
 }
@@ -28,7 +34,14 @@ class MyRecyclerViewAdapterApartman(private var apartmanList: List<Apartman>) : 
 
 
 class MyViewHolderApartman(val view: View): RecyclerView.ViewHolder(view){
-    val myText = view.findViewById<TextView>(R.id.apartman)
+    val adresa = view.findViewById<TextView>(R.id.IdDobijenaAdresa)
+    val povrsina = view.findViewById<TextView>(R.id.IdDobijenaPovrsina)
+    val brojSoba = view.findViewById<TextView>(R.id.IdDobijeniBrojSoba)
+    val brojTelefona = view.findViewById<TextView>(R.id.IdDobijeniBrojTelefona)
+    val emaill = view.findViewById<TextView>(R.id.IdDobijeniEmailKontakt)
+    val sprat = view.findViewById<TextView>(R.id.IdDobijeniSprat)
+
+
 
 
 }

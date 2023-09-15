@@ -13,6 +13,7 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.projekatmobilne.DataClasses.Apartman
@@ -68,6 +69,10 @@ class CommentsFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(requireActivity())
 
         commentList = arrayListOf()
+
+        binding.detalji.setOnClickListener{
+            it.findNavController().navigate(R.id.action_commentsFragment_to_podaciApartmanFragment)
+        }
 
 
         Ocenjivanje()

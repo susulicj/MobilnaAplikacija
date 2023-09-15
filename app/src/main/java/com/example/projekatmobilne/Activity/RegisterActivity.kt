@@ -1,5 +1,6 @@
 package com.example.projekatmobilne.Activity
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
@@ -23,6 +24,11 @@ class RegisterActivity : AppCompatActivity() {
         binding.btnReg.setOnClickListener(){
             performSignUp()
         }
+        binding.textView3.setOnClickListener{
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+        }
+
 
     }
 

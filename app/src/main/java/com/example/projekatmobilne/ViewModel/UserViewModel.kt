@@ -4,12 +4,16 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.projekatmobilne.DataClasses.User
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
 
 class UserViewModel: ViewModel() {
 
     private val database: FirebaseDatabase = FirebaseDatabase.getInstance()
     private val usersRef: DatabaseReference = database.getReference("Users")
+    private val databaseReference: DatabaseReference = FirebaseDatabase.getInstance().reference
+
 
     private val _sortedUsers = MutableLiveData<List<User>>()
     val sortedUsers: LiveData<List<User>> get() = _sortedUsers
@@ -37,4 +41,29 @@ class UserViewModel: ViewModel() {
             }
         })
     }
+
+    fun vratiTrenutngKorisnika(email: String, callback: (User?) -> Unit)
+    {
+        val query = databaseReference.child("Users").orderByChild("email").equalTo(email)
+
+        query.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    for (userSnapshot in dataSnapshot.children) {
+                        val user = userSnapshot.getValue(User::class.java)
+                        callback(user)
+                        return
+                    }
+                }
+                callback(null) //
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Došlo je do greške
+                callback(null)
+            }
+        })
+    }
+
+
 }

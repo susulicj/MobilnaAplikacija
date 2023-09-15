@@ -112,7 +112,7 @@ class HomeProfileFragment : Fragment() {
 
 
         binding.btnListaKorsnika.setOnClickListener{
-            it.findNavController().navigate(R.id.action_homeProfileFragment_to_usersListFragment)
+            it.findNavController().navigate(R.id.action_homeProfileFragment_to_userProfileFragment)
         }
 
         binding.btnDodajStan.setOnClickListener{
