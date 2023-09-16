@@ -114,7 +114,8 @@ class AddApartmentViewModel : ViewModel() {
                                     korisnickoIme = userData["korisnickoIme"] as String?,
                                     imeiPrezime = userData["ImeiPrezime"] as String?,
                                     brojTelefona = userData["brojTelefona"] as String?,
-                                    poeni = userData["poeni"] as Int?
+                                    poeni = userData["poeni"] as Int?,
+                                    profileImageUrl = userData["profileImageUrl"] as String?
                                 )
                             } else {
                                 null // Ako nema podataka o korisniku

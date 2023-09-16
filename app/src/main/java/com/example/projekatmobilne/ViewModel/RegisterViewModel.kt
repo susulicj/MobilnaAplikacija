@@ -26,7 +26,8 @@ class RegisterViewModel : ViewModel() {
         password: String,
         korisnickoIme: String,
         imeIprezime: String,
-        brojTelefona: String
+        brojTelefona: String,
+        profileImageUrl: String
     ) {
         if (email.isEmpty() || korisnickoIme.isEmpty() || password.isEmpty() || imeIprezime.isEmpty() || brojTelefona.isEmpty()) {
             _errorMessage.value = "Molim vas popunite sva polja"
@@ -38,7 +39,7 @@ class RegisterViewModel : ViewModel() {
                 if (task.isSuccessful) {
                     val user = auth.currentUser
                     if (user != null) {
-                        val newUser = User(email, korisnickoIme, imeIprezime, brojTelefona, 0)
+                        val newUser = User(email, korisnickoIme, imeIprezime, brojTelefona, 0, profileImageUrl)
                         database.child(korisnickoIme).setValue(newUser)
                                  .addOnSuccessListener {
                                       _registrationStatus.value = true

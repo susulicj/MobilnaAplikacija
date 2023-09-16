@@ -5,4 +5,5 @@ data class User(
     val korisnickoIme : String? = null,
     val imeiPrezime : String? = null,
     var brojTelefona : String? = null,
-    val poeni: Int? = null)
+    val poeni: Int? = null,
+    val profileImageUrl: String? = null)
