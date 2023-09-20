@@ -46,6 +46,7 @@ class CommentsFragment : Fragment() {
     private var ocena: Int = 0
 
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -126,10 +127,13 @@ class CommentsFragment : Fragment() {
                 apartmanViewModel.azuriranjeProsecneOcene(kliknutiApartman!!.verifikacioniKod){prosecnaOcena ->
                     binding.tvProsecnaOcena.text = prosecnaOcena.toString()
 
+
                 }
             })
 
             commentViewModel.azuriranjePoena(currentUser.email.toString(),3)
+            Toast.makeText(requireContext(), "Dobili ste 3 poena", Toast.LENGTH_SHORT).show()
+
 
         }
     }
@@ -180,6 +184,8 @@ class CommentsFragment : Fragment() {
 
             commentViewModel.dodajKomentar(noviKomentar)
             commentViewModel.azuriranjePoena(currentUser.email.toString(), 5)
+            Toast.makeText(requireContext(), "Dobili ste 5 poena", Toast.LENGTH_SHORT).show()
+
             EventChangeListener()
 
 

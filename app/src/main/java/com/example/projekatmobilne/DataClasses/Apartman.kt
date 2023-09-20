@@ -1,7 +1,10 @@
 package com.example.projekatmobilne.DataClasses
 
 import android.os.Parcelable
+import android.provider.ContactsContract
 import com.google.android.gms.maps.model.LatLng
+import java.time.LocalDate
+import java.util.Date
 
 
 data class Apartman(
@@ -15,5 +18,6 @@ data class Apartman(
     val prosecnaOcena: Double? = null,
     var listaOcena: MutableList<Int>? = mutableListOf(),
     val sprat: Long? = null,
-    val user: User? = null,
+    var datumKreiranja: String? = null,
+    val user: User? = null
 )

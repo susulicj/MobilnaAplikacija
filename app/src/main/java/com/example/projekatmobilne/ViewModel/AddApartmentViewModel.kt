@@ -1,18 +1,14 @@
 package com.example.projekatmobilne.ViewModel
 
-import android.util.Log
-import androidx.lifecycle.MutableLiveData
+
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.projekatmobilne.DataClasses.Apartman
-import com.example.projekatmobilne.DataClasses.Comment
 import com.example.projekatmobilne.DataClasses.User
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
+import java.time.LocalDate
 
 class AddApartmentViewModel : ViewModel() {
     private val database  = FirebaseFirestore.getInstance()
@@ -20,6 +16,7 @@ class AddApartmentViewModel : ViewModel() {
     private var listenerRegistration: ListenerRegistration? = null
 
     fun dodajApartman(apartman: Apartman) {
+
         val apartmanData = hashMapOf(
             "adresa" to apartman.adresa,
             "povrsina" to apartman.povrsina,
@@ -31,6 +28,7 @@ class AddApartmentViewModel : ViewModel() {
             "prosecnaOcena" to apartman.prosecnaOcena,
             "listaOcena" to apartman.listaOcena,
             "sprat" to apartman.sprat,
+            "datumKreiranja" to apartman.datumKreiranja,
             "user" to apartman.user,
 
         )
@@ -132,6 +130,7 @@ class AddApartmentViewModel : ViewModel() {
                                 podaciApartmana["posecnaOcena"] as Double?,
                                 podaciApartmana["listaOcena"] as MutableList<Int>?,
                                 podaciApartmana["sprat"] as Long?,
+                                podaciApartmana["datumKreiranja"] as String?,
                                 user
                             )
                             listaApartmana.add(apartman)

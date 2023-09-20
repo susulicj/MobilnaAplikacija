@@ -19,6 +19,7 @@ import com.google.firebase.firestore.QuerySnapshot
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
+import java.time.LocalDate
 
 class AddCommentViewModel : ViewModel() {
     private val database = FirebaseFirestore.getInstance()
@@ -198,6 +199,7 @@ class AddCommentViewModel : ViewModel() {
         val prosecnaOcena = apartmanMap["prosecnaOcena"] as Double?
         val listaOcena = apartmanMap["listaOcena"] as MutableList<Int>?
         val sprat = apartmanMap["sprat"] as Long?
+        val datumKreiranja = apartmanMap["datumKreiranja"] as String?
         val userMap = apartmanMap["user"] as Map<String, Any>?
 
 
@@ -213,7 +215,7 @@ class AddCommentViewModel : ViewModel() {
         val user = userMap?.let { createUserFromMap(it) }
 
         if (verifikacioniKod != null) {
-            return Apartman(adresa, povrsina, brojSoba, brojTelefona, email, latlng, verifikacioniKod,prosecnaOcena, listaOcena, sprat, user)
+            return Apartman(adresa, povrsina, brojSoba, brojTelefona, email, latlng, verifikacioniKod,prosecnaOcena, listaOcena, sprat, datumKreiranja, user)
         } else {
             return null
         }

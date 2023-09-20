@@ -211,10 +211,17 @@ class HomeProfileFragment : Fragment() {
 
 
         radioGroupFilter.setOnCheckedChangeListener{ group, checkedID ->
-            if(checkedID != R.id.IDbezFiltriranja){
+            if(checkedID != R.id.IDbezFiltriranja && checkedID != R.id.IDPoDatumu){
                 filter.visibility = View.VISIBLE
+                binding.FilterDatum.visibility = View.GONE
             }else{
                 filter.visibility = View.GONE
+                binding.FilterDatum.visibility = View.GONE
+
+            }
+
+            if(checkedID == R.id.IDPoDatumu){
+                binding.FilterDatum.visibility = View.VISIBLE
             }
 
         }
@@ -259,6 +266,14 @@ class HomeProfileFragment : Fragment() {
                         }
 
                         sharedViewModel.setListaApartmana(filtriranaLista)
+                    }
+                    R.id.IDPoDatumu->{
+
+                        val filtriranaLista = lista.filter {apartman ->
+                            apartman.datumKreiranja == binding.FilterDatum.text.toString()
+                        }
+                        sharedViewModel.setListaApartmana(filtriranaLista)
+
                     }
 
                 }

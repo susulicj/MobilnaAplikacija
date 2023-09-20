@@ -8,6 +8,7 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
+import android.provider.ContactsContract
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -26,6 +27,8 @@ import com.example.projekatmobilne.ViewModel.AddCommentViewModel
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import java.text.SimpleDateFormat
+import java.time.LocalDate
 
 
 class AddMarkerFragment : Fragment()  {
@@ -104,6 +107,7 @@ class AddMarkerFragment : Fragment()  {
 
        binding.btnDodaj.setOnClickListener{
 
+
             val noviApartman = Apartman(
                  adresa = binding.tvAdresa.text.toString(),
                  povrsina = binding.etPovrsina.text.toString().toDouble(),
@@ -116,6 +120,7 @@ class AddMarkerFragment : Fragment()  {
                  prosecnaOcena = 0.0,
                  listaOcena = mutableListOf(),
                  sprat = binding.ptSprat.text.toString().toLong(),
+                 datumKreiranja = LocalDate.now().toString(),
                  user = currentUser
             )
 

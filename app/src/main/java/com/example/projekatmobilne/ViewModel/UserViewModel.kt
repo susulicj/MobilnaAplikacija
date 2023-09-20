@@ -7,6 +7,9 @@ import com.example.projekatmobilne.DataClasses.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.database.*
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.tasks.await
+import kotlinx.coroutines.withContext
 
 class UserViewModel: ViewModel() {
 
@@ -65,5 +68,19 @@ class UserViewModel: ViewModel() {
         })
     }
 
+   /* suspend fun vratiTrenutngKorisnika(email: String): User? {
+        return withContext(Dispatchers.IO) {
+            val query = databaseReference.child("Users").orderByChild("email").equalTo(email)
+            val dataSnapshot = query.get().await()
+
+            if (dataSnapshot.exists()) {
+                for (userSnapshot in dataSnapshot.children) {
+                    val user = userSnapshot.getValue(User::class.java)
+                    return@withContext user
+                }
+            }
+            return@withContext null
+        }
+    }*/
 
 }

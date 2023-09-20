@@ -17,14 +17,16 @@
         android:layout_margin="10dp"
         android:layout_marginTop="21dp"
         android:text="Poeni:"
-        android:textSize="24sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.052"
+        app:layout_constraintHorizontal_bias="0.298"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvKorisnickoIme"
         app:layout_constraintVertical_bias="0.0" />
+
+    <!-- Underline ispod tvValueKI -->
 
     <TextView
         android:id="@+id/tvKorisnickoIme"
@@ -32,16 +34,14 @@
         android:layout_height="wrap_content"
         android:layout_margin="10dp"
         android:text="Korisnicko ime:"
-        android:textSize="24sp"
+        android:textSize="20sp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.079"
+        app:layout_constraintHorizontal_bias="0.421"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.052" />
-
-    <!-- Underline ispod tvValueKI -->
+        app:layout_constraintVertical_bias="0.235" />
 
     <TextView
         android:id="@+id/tvValueKI"
@@ -50,10 +50,10 @@
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.491"
+        app:layout_constraintHorizontal_bias="0.166"
         app:layout_constraintStart_toEndOf="@+id/tvKorisnickoIme"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.242" />
+        app:layout_constraintVertical_bias="0.323" />
 
     <TextView
         android:id="@+id/tvValuePoeni"
@@ -62,10 +62,10 @@
         android:textSize="20sp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.173"
+        app:layout_constraintHorizontal_bias="0.092"
         app:layout_constraintStart_toEndOf="@+id/tvPoeni"
         app:layout_constraintTop_toBottomOf="@+id/tvValueKI"
-        app:layout_constraintVertical_bias="0.629" />
+        app:layout_constraintVertical_bias="0.473" />
 
     <View
         android:layout_width="0dp"
@@ -73,6 +73,19 @@
         android:background="@android:color/black"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="parent" />
+
+    <ImageView
+        android:id="@+id/IdSlikaKorisnika"
+        android:layout_width="76dp"
+        android:layout_height="80dp"
+        android:layout_margin="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.515"
+        tools:srcCompat="@tools:sample/avatars" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -21,9 +21,11 @@ import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.example.projekatmobilne.DataClasses.Apartman
+import com.example.projekatmobilne.DataClasses.User
 import com.example.projekatmobilne.MyRecyclerViewAdapterApartman
 import com.example.projekatmobilne.R
 import com.example.projekatmobilne.ViewModel.AddApartmentViewModel
+import com.example.projekatmobilne.ViewModel.AddCommentViewModel
 import com.example.projekatmobilne.ViewModel.CommentViewModel
 import com.example.projekatmobilne.ViewModel.SharedViewModel
 import com.google.android.gms.location.*
@@ -35,6 +37,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.firestore.FirebaseFirestore
 
 
@@ -53,6 +57,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     val sharedViewModel : SharedViewModel by activityViewModels()
     private val requestingLocationUpdates = true // Set this to true if you want to start location updates initially
     private lateinit var locationRequest: LocationRequest
+    private lateinit var commentViewModel: AddCommentViewModel
+    private lateinit var currentFirebaseUser: FirebaseUser
+    private lateinit var currentUser: User
 
 
 
@@ -78,6 +85,9 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment?
         mapFragment?.getMapAsync(this)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+        commentViewModel = ViewModelProvider(this).get(AddCommentViewModel::class.java)
+        currentFirebaseUser = FirebaseAuth.getInstance().currentUser!!
+        currentUser = User(currentFirebaseUser.email)
 
         locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
@@ -222,6 +232,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
                 override fun onLocationResult(locationResult: LocationResult) {
                     locationResult.lastLocation?.let { location ->
                         val currentLatLng = LatLng(location.latitude, location.longitude)
+                        val thresholdInMeters = 10.0
 
                         val markeriZaBojenjeuZuto = mutableListOf<Marker>()
 
@@ -230,11 +241,16 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
                             Log.d("targetttt", "$targetLocation")
                             val distance = calculateDistance(currentLatLng, targetLocation.latlng!!)
                             if (distance <= proximityDistance) {
-                               // Toast.makeText(requireContext(), "Približavate se ${targetLocation}!", Toast.LENGTH_SHORT).show()
+
+                               /* if(distance <= thresholdInMeters) {
+                                    commentViewModel.azuriranjePoena(currentUser.email.toString(), 2)
+                                    Toast.makeText(requireContext(), "Dobili ste 2 poena", Toast.LENGTH_SHORT).show()
+                                }*/
                                 for (marker in targetMarkers) {
                                     val markerLatLng = marker.position
                                     if (markerLatLng == targetLocation.latlng) {
                                         markeriZaBojenjeuZuto.add(marker)
+
 
 
                                     }else{
