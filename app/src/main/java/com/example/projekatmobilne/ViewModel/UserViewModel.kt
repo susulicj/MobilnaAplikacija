@@ -1,5 +1,6 @@
 package com.example.projekatmobilne.ViewModel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -68,19 +69,52 @@ class UserViewModel: ViewModel() {
         })
     }
 
-   /* suspend fun vratiTrenutngKorisnika(email: String): User? {
-        return withContext(Dispatchers.IO) {
-            val query = databaseReference.child("Users").orderByChild("email").equalTo(email)
+    suspend fun vratiEmail(ime:String) : DataSnapshot?{
+        return try{
+            val query= usersRef.orderByChild("korisnickoIme").equalTo(ime).limitToFirst(1)
             val dataSnapshot = query.get().await()
 
-            if (dataSnapshot.exists()) {
-                for (userSnapshot in dataSnapshot.children) {
-                    val user = userSnapshot.getValue(User::class.java)
-                    return@withContext user
-                }
-            }
-            return@withContext null
+
+            dataSnapshot
+
+        }catch (e:Exception){
+            Log.d("rezultatttt", "$e")
+            null
         }
-    }*/
+    }
+
+    suspend fun proveriDuplikatKorisnika(ime: String): Boolean {
+        return try {
+            val query = usersRef.orderByChild("korisnickoIme").equalTo(ime).limitToFirst(1)
+            val dataSnapshot = query.get().await()
+
+            dataSnapshot.exists()
+        } catch (e: Exception) {
+           Log.d("rezultat", "$e")
+            false
+        }
+    }
+
+
+
+
+
+
+
+
+    /* suspend fun vratiTrenutngKorisnika(email: String): User? {
+         return withContext(Dispatchers.IO) {
+             val query = databaseReference.child("Users").orderByChild("email").equalTo(email)
+             val dataSnapshot = query.get().await()
+
+             if (dataSnapshot.exists()) {
+                 for (userSnapshot in dataSnapshot.children) {
+                     val user = userSnapshot.getValue(User::class.java)
+                     return@withContext user
+                 }
+             }
+             return@withContext null
+         }
+     }*/
 
 }

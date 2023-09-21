@@ -253,7 +253,7 @@ class HomeProfileFragment : Fragment() {
      /*  apartmanViewModel.preuzmiSveApartmane { listaApartmana ->
             lista.addAll(listaApartmana)
         }*/
-        lifecycleScope.launch {
+        lifecycleScope.launch(Dispatchers.IO){
             lista = apartmanViewModel.preuzmiSveApartmane() as MutableList<Apartman>
             // Ovde možete raditi sa listom apartmana
         }

@@ -74,6 +74,9 @@ class CommentsFragment : Fragment() {
 
         commentList = arrayListOf()
 
+        binding.imageButton3.setOnClickListener{
+            it.findNavController().navigate(R.id.action_commentsFragment_to_homeProfileFragment)
+        }
         binding.detalji.setOnClickListener{
             it.findNavController().navigate(R.id.action_commentsFragment_to_podaciApartmanFragment)
         }
@@ -143,7 +146,6 @@ class CommentsFragment : Fragment() {
 
         btnSubmit.setOnClickListener{
             val message = ratingBar.rating.toString()
-            Toast.makeText(requireActivity(), "Rating is"+ message, Toast.LENGTH_SHORT).show()
             var kliknutiApartman: Apartman? = null
             viewModel.getclickedApartman().observe(viewLifecycleOwner, Observer { apartman ->
                 if (apartman != null) {

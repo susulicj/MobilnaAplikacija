@@ -8,22 +8,29 @@ import android.graphics.Bitmap
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.projekatmobilne.ViewModel.RegisterViewModel
+import com.example.projekatmobilne.ViewModel.UserViewModel
 import com.example.projekatmobilne.databinding.ActivityRegisterBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.storage.FirebaseStorage
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.ByteArrayOutputStream
 
 class RegisterActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityRegisterBinding
     private lateinit var viewModel: RegisterViewModel
+    private lateinit var userViewModel: UserViewModel
     private lateinit var myImage: ImageView
     private val cameraRequestId = 1222
     private var imageURL: String? = null
@@ -31,6 +38,7 @@ class RegisterActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
 
         viewModel = ViewModelProvider(this).get(RegisterViewModel::class.java)
+        userViewModel = ViewModelProvider(this).get(UserViewModel::class.java)
         binding = ActivityRegisterBinding.inflate(layoutInflater)
         myImage = binding.myImage
 
@@ -46,6 +54,10 @@ class RegisterActivity : AppCompatActivity() {
             performSignUp()
         }
         binding.textView3.setOnClickListener{
+            val intent = Intent(this, LoginActivity::class.java)
+            startActivity(intent)
+        }
+        binding.btnNazad.setOnClickListener{
             val intent = Intent(this, LoginActivity::class.java)
             startActivity(intent)
         }
@@ -96,30 +108,51 @@ class RegisterActivity : AppCompatActivity() {
         var imeIprezime = binding.etImeiPrezime.text.toString()
         var brojTelefona = binding.editTextNumber.text.toString()
 
+        var rezultat: Boolean = true
+        lifecycleScope.launch(Dispatchers.IO) {
+            rezultat = userViewModel.proveriDuplikatKorisnika(korisnickoIme)
 
 
-        viewModel.registerUser(email, password, korisnickoIme,  imeIprezime, brojTelefona, imageURL)
+            withContext(Dispatchers.Main) {
+                if (rezultat) {
+                    runOnUiThread {
+                        Toast.makeText(this@RegisterActivity, "Vec postoji korisnik sa tim korisnickim imenom", Toast.LENGTH_SHORT).show()
+                    }
+                } else {
+                    viewModel.registerUser(email, password, korisnickoIme, imeIprezime, brojTelefona, imageURL)
+
+                    viewModel.registrationStatus.observe(this@RegisterActivity) { success ->
+                        if (success) {
+
+                            runOnUiThread {
+                                Toast.makeText(this@RegisterActivity, "Uspesno ste se registrovali", Toast.LENGTH_LONG).show()
+                            }
+                            binding.etEmail.text.clear()
+                            binding.ptKorisnickoIme.text.clear()
+                            binding.passwordReg.text.clear()
+                            binding.etImeiPrezime.text.clear()
+                            binding.editTextNumber.text.clear()
+                            binding.myImage.setImageDrawable(null)
 
 
-        viewModel.registrationStatus.observe(this) { success ->
-            if (success) {
-                Toast.makeText(this, "Uspesno ste se registrovali", Toast.LENGTH_LONG).show()
-                binding.etEmail.text.clear()
-                binding.ptKorisnickoIme.text.clear()
-                binding.passwordReg.text.clear()
-                binding.etImeiPrezime.text.clear()
-                binding.editTextNumber.text.clear()
-                binding.myImage.setImageDrawable(null) // Postavlja ImageView bez slike
+                        }
+                    }
+
+                    viewModel.errorMessage.observe(this@RegisterActivity) { message ->
+                        if (message.isNotEmpty()) {
+                            runOnUiThread {
+                                Toast.makeText(this@RegisterActivity, message, Toast.LENGTH_LONG)
+                                    .show()
+                            }
+                        }
+
+                    }
 
 
+                }
             }
-        }
 
-        viewModel.errorMessage.observe(this) { message ->
-            if (message.isNotEmpty()) {
-                Toast.makeText(this, message, Toast.LENGTH_LONG).show()
-            }
-        }
+    }
 
 
 

@@ -46,7 +46,7 @@ class RegisterViewModel : ViewModel() {
 
                                  }
                                  .addOnFailureListener {
-                                      _errorMessage.value = "Neuspesno pvde"
+                                      _errorMessage.value = "Neuspesna prijava"
                             }
                     }
                 } else {

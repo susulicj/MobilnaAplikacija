@@ -36,7 +36,11 @@
         android:id="@+id/addMarkerFragment"
         android:name="com.example.projekatmobilne.Fragments.AddMarkerFragment"
         android:label="fragment_add_marker"
-        tools:layout="@layout/fragment_add_marker" />
+        tools:layout="@layout/fragment_add_marker" >
+        <action
+            android:id="@+id/action_addMarkerFragment_to_homeProfileFragment"
+            app:destination="@id/homeProfileFragment" />
+    </fragment>
     <fragment
         android:id="@+id/commentsFragment"
         android:name="com.example.projekatmobilne.Fragments.CommentsFragment"
@@ -45,17 +49,28 @@
         <action
             android:id="@+id/action_commentsFragment_to_podaciApartmanFragment"
             app:destination="@id/podaciApartmanFragment" />
+        <action
+            android:id="@+id/action_commentsFragment_to_homeProfileFragment"
+            app:destination="@id/homeProfileFragment" />
     </fragment>
     <fragment
         android:id="@+id/usersListFragment"
         android:name="com.example.projekatmobilne.Fragments.UsersListFragment"
         android:label="fragment_users_list"
-        tools:layout="@layout/fragment_users_list" />
+        tools:layout="@layout/fragment_users_list" >
+        <action
+            android:id="@+id/action_usersListFragment_to_userProfileFragment"
+            app:destination="@id/userProfileFragment" />
+    </fragment>
     <fragment
         android:id="@+id/apartmanListFragment"
         android:name="com.example.projekatmobilne.Fragments.ApartmanListFragment"
         android:label="fragment_apartman_list"
-        tools:layout="@layout/fragment_apartman_list" />
+        tools:layout="@layout/fragment_apartman_list" >
+        <action
+            android:id="@+id/action_apartmanListFragment_to_homeProfileFragment"
+            app:destination="@id/homeProfileFragment" />
+    </fragment>
     <fragment
         android:id="@+id/userProfileFragment"
         android:name="com.example.projekatmobilne.Fragments.UserProfileFragment"
@@ -64,6 +79,9 @@
         <action
             android:id="@+id/action_userProfileFragment_to_usersListFragment"
             app:destination="@id/usersListFragment" />
+        <action
+            android:id="@+id/action_userProfileFragment_to_homeProfileFragment"
+            app:destination="@id/homeProfileFragment" />
     </fragment>
     <fragment
         android:id="@+id/podaciApartmanFragment"
@@ -73,5 +91,8 @@
         <action
             android:id="@+id/action_podaciApartmanFragment_to_homeProfileFragment"
             app:destination="@id/homeProfileFragment" />
+        <action
+            android:id="@+id/action_podaciApartmanFragment_to_commentsFragment"
+            app:destination="@id/commentsFragment" />
     </fragment>
 </navigation>

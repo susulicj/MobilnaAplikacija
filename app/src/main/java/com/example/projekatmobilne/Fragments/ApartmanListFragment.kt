@@ -12,6 +12,7 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
+import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.projekatmobilne.DataClasses.Apartman
 import com.example.projekatmobilne.MyRecyclerViewAdapterApartman
@@ -45,6 +46,9 @@ class ApartmanListFragment : Fragment() {
         apartmanViewModel = ViewModelProvider(this).get(AddApartmentViewModel::class.java)
 
 
+        binding.btnVratiSe.setOnClickListener{
+            it.findNavController().navigate(R.id.action_apartmanListFragment_to_homeProfileFragment)
+        }
         preuzimanje()
 
 

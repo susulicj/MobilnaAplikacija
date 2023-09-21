@@ -53,6 +53,9 @@ class UserProfileFragment : Fragment() {
 
 
 
+        binding.imageButton.setOnClickListener{
+            it.findNavController().navigate(R.id.action_userProfileFragment_to_homeProfileFragment)
+        }
         userViewModel.vratiTrenutngKorisnika(currentFirebaseUser.email!!) { user ->
             if (user != null) {
                 Log.d("user", "$user")

@@ -57,6 +57,10 @@ class PodaciApartmanFragment : Fragment() {
         email = " "
         verKod = " "
 
+        binding.btnNazad6.setOnClickListener{
+            it.findNavController().navigate(R.id.action_podaciApartmanFragment_to_commentsFragment)
+        }
+
 
         viewModel.getclickedApartman().observe(viewLifecycleOwner, Observer { apartman ->
             if (apartman != null) {

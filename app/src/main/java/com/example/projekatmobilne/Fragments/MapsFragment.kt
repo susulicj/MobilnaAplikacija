@@ -59,6 +59,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
 
 
+
     companion object{
         private const val LOCATION_REQUEST_CODE = 1
     }
@@ -136,6 +137,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
                 }
 
             }else{
+
 
 
             for(apartman in listaApartmana) {

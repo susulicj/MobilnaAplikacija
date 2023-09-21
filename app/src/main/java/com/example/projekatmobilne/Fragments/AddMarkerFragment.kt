@@ -22,8 +22,10 @@ import com.example.projekatmobilne.databinding.FragmentAddMarkerBinding
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.findNavController
 import com.example.projekatmobilne.DataClasses.Apartman
 import com.example.projekatmobilne.DataClasses.User
+import com.example.projekatmobilne.R
 import com.example.projekatmobilne.ViewModel.AddApartmentViewModel
 import com.example.projekatmobilne.ViewModel.AddCommentViewModel
 import com.google.android.gms.maps.model.LatLng
@@ -81,7 +83,9 @@ class AddMarkerFragment : Fragment()  {
         }
 
 
-
+      binding.btnNazad2.setOnClickListener{
+          it.findNavController().navigate(R.id.action_addMarkerFragment_to_homeProfileFragment)
+      }
 
       /* setFragmentResultListener("location") { location, bundle ->
             latLng = bundle.getString("location").toString()
