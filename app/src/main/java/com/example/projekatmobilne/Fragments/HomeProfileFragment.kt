@@ -30,6 +30,13 @@ import com.example.projekatmobilne.databinding.FragmentHomeProfileBinding
 import com.google.android.gms.location.*
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
+
 import java.util.concurrent.TimeUnit
 
 class HomeProfileFragment : Fragment() {
@@ -40,6 +47,7 @@ class HomeProfileFragment : Fragment() {
     private lateinit var currentLocation: Location
     private lateinit var locationRequest: LocationRequest
     private lateinit var locationCallback: LocationCallback
+    private val requestingLocationUpdates = true
 
 
 
@@ -47,6 +55,7 @@ class HomeProfileFragment : Fragment() {
     companion object {
         private const val LOCATION_PERMISSION_REQUEST_CODE = 1 // Zamijenite 123 sa željenim brojem
     }
+
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -71,18 +80,16 @@ class HomeProfileFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         apartmanViewModel = ViewModelProvider(this).get(AddApartmentViewModel::class.java)
-        //sharedViewModel = ViewModelProvider(this).get(SharedViewModel::class.java)
 
 
-        locationRequest = LocationRequest().apply {
-            interval = TimeUnit.SECONDS.toMillis(60)
-            fastestInterval = TimeUnit.SECONDS.toMillis(30)
-            maxWaitTime = TimeUnit.MINUTES.toMillis(2)
-            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
-        }
+        locationRequest =   LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 60).apply {
+            setGranularity(Granularity.GRANULARITY_PERMISSION_LEVEL)
+            setWaitForAccurateLocation(true)
+            Log.d("Location", "Provera")
+        }.build()
 
         // Inicijalizuj LocationCallback
-        locationCallback = object : LocationCallback() {
+       locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 super.onLocationResult(locationResult)
                 val location = locationResult.lastLocation
@@ -93,6 +100,16 @@ class HomeProfileFragment : Fragment() {
                     Log.d("Location", "Latitude: $latitude, Longitude: $longitude")
                 }
             }
+            override fun onLocationAvailability(locationAvailability: LocationAvailability) {
+                if (!locationAvailability.isLocationAvailable) {
+                    // Lokacija nije dostupna
+                    Log.e("Location", "Lokacija nije dostupna")
+
+                    // Prikazivanje toast poruke da lokacija nije dostupna
+                    Toast.makeText(requireContext(), "Lokacija nije dostupna", Toast.LENGTH_SHORT).show()
+                }
+            }
+
         }
 
 
@@ -202,6 +219,14 @@ class HomeProfileFragment : Fragment() {
         // Kada više nije potrebno praćenje lokacije, obavezno otkažite pretplatu na location updates
         fusedLocationClient.removeLocationUpdates(locationCallback)
     }
+
+    override fun onResume() {
+        super.onResume()
+        if (requestingLocationUpdates) {
+            requestLocationUpdates()
+        }
+    }
+
     private fun filtriranje(){
 
         var radioGroup = binding.radioGroup
@@ -225,9 +250,15 @@ class HomeProfileFragment : Fragment() {
             }
 
         }
-        apartmanViewModel.preuzmiSveApartmane { listaApartmana ->
+     /*  apartmanViewModel.preuzmiSveApartmane { listaApartmana ->
             lista.addAll(listaApartmana)
+        }*/
+        lifecycleScope.launch {
+            lista = apartmanViewModel.preuzmiSveApartmane() as MutableList<Apartman>
+            // Ovde možete raditi sa listom apartmana
         }
+
+
 
 
         binding.btnmapa.setOnClickListener{
@@ -313,6 +344,7 @@ class HomeProfileFragment : Fragment() {
         val c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a))
         return radius * c
     }
+
 
 
 }

@@ -1,11 +1,14 @@
 package com.example.projekatmobilne.Fragments
 
+import android.app.Activity
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.clearFragmentResult
@@ -75,6 +78,30 @@ class CommentsFragment : Fragment() {
             it.findNavController().navigate(R.id.action_commentsFragment_to_podaciApartmanFragment)
         }
 
+        binding.ptKomentar.setOnClickListener{
+
+            binding.IdNaslov.visibility = View.INVISIBLE
+            binding.ratingBar.visibility = View.INVISIBLE
+            binding.btnSubmit.visibility = View.INVISIBLE
+            binding.Idnatpis.visibility = View.INVISIBLE
+            binding.myRecyclerView.visibility = View.INVISIBLE
+            binding.detalji.visibility = View.INVISIBLE
+            binding.tvProsecnaOcena.visibility = View.INVISIBLE
+            binding.vratiSeNazad.visibility = View.VISIBLE
+        }
+
+        binding.vratiSeNazad.setOnClickListener{
+            binding.IdNaslov.visibility = View.VISIBLE
+            binding.ratingBar.visibility = View.VISIBLE
+            binding.btnSubmit.visibility = View.VISIBLE
+            binding.Idnatpis.visibility = View.VISIBLE
+            binding.myRecyclerView.visibility = View.VISIBLE
+            binding.detalji.visibility = View.VISIBLE
+            binding.tvProsecnaOcena.visibility = View.VISIBLE
+            binding.ptKomentar.text.clear()
+            binding.vratiSeNazad.visibility = View.INVISIBLE
+            hideKeyboard(requireActivity())
+        }
 
         Ocenjivanje()
         EventChangeListener()
@@ -167,29 +194,56 @@ class CommentsFragment : Fragment() {
 
         var kliknutiApartman: Apartman? = null
 
-        binding.btnDodajKomentar.setOnClickListener{
-            viewModel.getclickedApartman().observe(viewLifecycleOwner, Observer { apartman ->
-                if (apartman != null) {
-                    kliknutiApartman = apartman
-                    Log.d("apartman kliknutiii", "$apartman")
-                }
-            })
-
-            val noviKomentar = Comment(
-                tekst = binding.ptKomentar.text.toString(),
-                user = currentUser,
-                apartman = kliknutiApartman,
-                verifikacioniKodApartman = kliknutiApartman!!.verifikacioniKod
-            )
-
-            commentViewModel.dodajKomentar(noviKomentar)
-            commentViewModel.azuriranjePoena(currentUser.email.toString(), 5)
-            Toast.makeText(requireContext(), "Dobili ste 5 poena", Toast.LENGTH_SHORT).show()
-
-            EventChangeListener()
 
 
-            Log.d("apartman kliknutiii", "$noviKomentar")
+            binding.btnDodajKomentar.setOnClickListener {
+                if(binding.ptKomentar.text.isEmpty()){
+                    Toast.makeText(requireContext(), "Unesie tekst", Toast.LENGTH_SHORT).show()
+
+                }else {
+                viewModel.getclickedApartman().observe(viewLifecycleOwner, Observer { apartman ->
+                    if (apartman != null) {
+                        kliknutiApartman = apartman
+                        Log.d("apartman kliknutiii", "$apartman")
+                    }
+                })
+
+                val noviKomentar = Comment(
+                    tekst = binding.ptKomentar.text.toString(),
+                    user = currentUser,
+                    apartman = kliknutiApartman,
+                    verifikacioniKodApartman = kliknutiApartman!!.verifikacioniKod
+                )
+
+                commentViewModel.dodajKomentar(noviKomentar)
+                commentViewModel.azuriranjePoena(currentUser.email.toString(), 5)
+                Toast.makeText(requireContext(), "Dobili ste 5 poena", Toast.LENGTH_SHORT).show()
+
+                EventChangeListener()
+                binding.IdNaslov.visibility = View.VISIBLE
+                binding.ratingBar.visibility = View.VISIBLE
+                binding.btnSubmit.visibility = View.VISIBLE
+                binding.Idnatpis.visibility = View.VISIBLE
+                binding.myRecyclerView.visibility = View.VISIBLE
+                binding.detalji.visibility = View.VISIBLE
+                binding.tvProsecnaOcena.visibility = View.VISIBLE
+                binding.ptKomentar.text.clear()
+                binding.vratiSeNazad.visibility = View.INVISIBLE
+                    hideKeyboard(requireActivity())
+
+                Log.d("apartman kliknutiii", "$noviKomentar")
+            }
+        }
+
+
+
+    }
+
+    fun hideKeyboard(activity: Activity) {
+        val inputMethodManager = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        val currentFocusView = activity.currentFocus
+        if (currentFocusView != null) {
+            inputMethodManager.hideSoftInputFromWindow(currentFocusView.windowToken, 0)
         }
     }
 

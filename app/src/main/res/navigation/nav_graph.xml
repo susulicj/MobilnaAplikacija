@@ -29,9 +29,6 @@
         android:label="fragment_maps"
         tools:layout="@layout/fragment_maps" >
         <action
-            android:id="@+id/action_mapsFragment_to_addMarkerFragment"
-            app:destination="@id/addMarkerFragment" />
-        <action
             android:id="@+id/action_mapsFragment_to_commentsFragment"
             app:destination="@id/commentsFragment" />
     </fragment>
@@ -72,5 +69,9 @@
         android:id="@+id/podaciApartmanFragment"
         android:name="com.example.projekatmobilne.Fragments.PodaciApartmanFragment"
         android:label="fragment_podaci_apartman"
-        tools:layout="@layout/fragment_podaci_apartman" />
+        tools:layout="@layout/fragment_podaci_apartman" >
+        <action
+            android:id="@+id/action_podaciApartmanFragment_to_homeProfileFragment"
+            app:destination="@id/homeProfileFragment" />
+    </fragment>
 </navigation>

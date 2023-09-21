@@ -26,13 +26,14 @@ class RegisterActivity : AppCompatActivity() {
     private lateinit var viewModel: RegisterViewModel
     private lateinit var myImage: ImageView
     private val cameraRequestId = 1222
-    private lateinit var imageURL: String
+    private var imageURL: String? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         viewModel = ViewModelProvider(this).get(RegisterViewModel::class.java)
         binding = ActivityRegisterBinding.inflate(layoutInflater)
         myImage = binding.myImage
+
 
         if(ContextCompat.checkSelfPermission(applicationContext, Manifest.permission.CAMERA) == PackageManager.PERMISSION_DENIED )
             ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.CAMERA),cameraRequestId)
@@ -95,11 +96,21 @@ class RegisterActivity : AppCompatActivity() {
         var imeIprezime = binding.etImeiPrezime.text.toString()
         var brojTelefona = binding.editTextNumber.text.toString()
 
+
+
         viewModel.registerUser(email, password, korisnickoIme,  imeIprezime, brojTelefona, imageURL)
+
 
         viewModel.registrationStatus.observe(this) { success ->
             if (success) {
-                Toast.makeText(this, "Uspesno", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Uspesno ste se registrovali", Toast.LENGTH_LONG).show()
+                binding.etEmail.text.clear()
+                binding.ptKorisnickoIme.text.clear()
+                binding.passwordReg.text.clear()
+                binding.etImeiPrezime.text.clear()
+                binding.editTextNumber.text.clear()
+                binding.myImage.setImageDrawable(null) // Postavlja ImageView bez slike
+
 
             }
         }

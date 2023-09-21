@@ -8,6 +8,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.firestore.FieldValue
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.ListenerRegistration
+import kotlinx.coroutines.tasks.await
 import java.time.LocalDate
 
 class AddApartmentViewModel : ViewModel() {
@@ -90,7 +91,7 @@ class AddApartmentViewModel : ViewModel() {
 
   }
 
-    fun preuzmiSveApartmane(callback: (List<Apartman>) -> Unit) {
+   /* fun preuzmiSveApartmane(callback: (List<Apartman>) -> Unit) {
         try {
             apartmanRef.get()
                 .addOnSuccessListener { querySnapshot ->
@@ -146,9 +147,59 @@ class AddApartmentViewModel : ViewModel() {
             println("Greska prilikom izvršavanja upita: $e")
             callback(emptyList())
         }
+    }*/
+
+    suspend fun preuzmiSveApartmane(): List<Apartman> {
+        return try {
+            val querySnapshot = apartmanRef.get().await()
+            val listaApartmana = mutableListOf<Apartman>()
+            for (document in querySnapshot.documents) {
+                val podaciApartmana = document.data
+
+                val latlngData = podaciApartmana?.get("latlng") as? HashMap<String, Double>
+
+                if (latlngData != null && latlngData.containsKey("latitude") && latlngData.containsKey("longitude")) {
+                    val latitude = latlngData["latitude"]!!
+                    val longitude = latlngData["longitude"]!!
+                    val latLng = LatLng(latitude, longitude)
+
+                    val userData = podaciApartmana["user"] as HashMap<String, Any>?
+                    val user: User? = if (userData != null) {
+                        User(
+                            email = userData["email"] as String?,
+                            korisnickoIme = userData["korisnickoIme"] as String?,
+                            imeiPrezime = userData["ImeiPrezime"] as String?,
+                            brojTelefona = userData["brojTelefona"] as String?,
+                            poeni = userData["poeni"] as Int?,
+                            profileImageUrl = userData["profileImageUrl"] as String?
+                        )
+                    } else {
+                        null // Ako nema podataka o korisniku
+                    }
+
+                    val apartman = Apartman(
+                        podaciApartmana["adresa"] as String,
+                        podaciApartmana["povrsina"] as Double,
+                        podaciApartmana["brojSoba"] as Long,
+                        podaciApartmana["brojTelefona"] as Long,
+                        podaciApartmana["email"] as String,
+                        latLng,
+                        podaciApartmana["verifikacioniKod"] as String,
+                        podaciApartmana["posecnaOcena"] as Double?,
+                        podaciApartmana["listaOcena"] as MutableList<Int>?,
+                        podaciApartmana["sprat"] as Long?,
+                        podaciApartmana["datumKreiranja"] as String?,
+                        user
+                    )
+                    listaApartmana.add(apartman)
+                }
+            }
+            listaApartmana
+        } catch (e: Exception) {
+            println("Greska prilikom izvršavanja upita: $e")
+            emptyList()
+        }
     }
-
-
 
     fun azuriranjeProsecneOcene(apartmanID: String, callback: (Double) -> Unit) {
         listenerRegistration = apartmanRef.document(apartmanID).addSnapshotListener { documentSnapshot, e ->
@@ -176,12 +227,41 @@ class AddApartmentViewModel : ViewModel() {
     fun vratiProsecnuOcenu(apartmanID: String, callback: (Double) -> Unit){
         apartmanRef.document(apartmanID).get()
             .addOnSuccessListener {
-                val prosecnaOcena = it.get("prosecnaOcena") as Double
+                val prosecnaOcena = it.get("prosecnaOcena") as Double?
                 if(prosecnaOcena != null){
                     callback(prosecnaOcena)
                 }
             }
     }
+
+    suspend fun proveriDuplikatApartmana(apartman: Apartman): Boolean {
+        database.collection("apartmani")
+
+        val querySnapshot = apartmanRef
+            .whereEqualTo("adresa", apartman.adresa)
+            .whereEqualTo("sprat", apartman.sprat)
+            .whereEqualTo("latlng", apartman.latlng)
+            .get()
+            .await()
+
+        return !querySnapshot.isEmpty
+    }
+
+
+    suspend fun deleteApartment(apartmentId: String) {
+        try {
+            database.collection("apartmani")
+                .document(apartmentId)
+                .delete()
+                .await()
+
+        } catch (e: Exception) {
+
+        }
+    }
+
+
+
 
 }
 

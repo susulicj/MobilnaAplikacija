@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
@@ -42,21 +43,9 @@ class ApartmanListFragment : Fragment() {
 
         binding = FragmentApartmanListBinding.inflate(inflater, container, false)
         apartmanViewModel = ViewModelProvider(this).get(AddApartmentViewModel::class.java)
-       // sharedViewModel = ViewModelProvider(this).get(SharedViewModel::class.java)
-
-
-        /*apartmanViewModel.preuzmiSveApartmane { listaApartmana ->
-            val myAdapter = MyRecyclerViewAdapterApartman(listaApartmana)
-            recyclerView.adapter = myAdapter
-
-        }*/
-
 
 
         preuzimanje()
-
-
-        // Ovde možete posmatrati LiveData i reagovati na promene u njemu
 
 
         return binding.root
@@ -68,9 +57,15 @@ class ApartmanListFragment : Fragment() {
         recyclerView.layoutManager = LinearLayoutManager(requireActivity())
 
         sharedViewModel.getListaApartmana()?.observe(viewLifecycleOwner, Observer { listaApartmana ->
-            val myAdapter = MyRecyclerViewAdapterApartman(listaApartmana)
-            recyclerView.adapter = myAdapter
-            Log.d("filterrrr cao", "$listaApartmana")
+            if(listaApartmana.isEmpty()) {
+                activity?.runOnUiThread {
+                    Toast.makeText(requireContext(), "Ne postoje stnovi sa takvom osobinom", Toast.LENGTH_SHORT).show()
+                }
+            }
+            else{
+                val myAdapter = MyRecyclerViewAdapterApartman(listaApartmana)
+                recyclerView.adapter = myAdapter
+            }
         })
 
 

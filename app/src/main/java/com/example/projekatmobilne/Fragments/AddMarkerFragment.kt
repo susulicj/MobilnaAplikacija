@@ -13,6 +13,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.content.ContextCompat.getSystemService
@@ -20,6 +21,7 @@ import androidx.fragment.app.Fragment
 import com.example.projekatmobilne.databinding.FragmentAddMarkerBinding
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import com.example.projekatmobilne.DataClasses.Apartman
 import com.example.projekatmobilne.DataClasses.User
 import com.example.projekatmobilne.ViewModel.AddApartmentViewModel
@@ -27,6 +29,8 @@ import com.example.projekatmobilne.ViewModel.AddCommentViewModel
 import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.LocalDate
 
@@ -105,7 +109,11 @@ class AddMarkerFragment : Fragment()  {
 
    private fun saveApartman(){
 
+
+
+
        binding.btnDodaj.setOnClickListener{
+
 
 
             val noviApartman = Apartman(
@@ -123,34 +131,37 @@ class AddMarkerFragment : Fragment()  {
                  datumKreiranja = LocalDate.now().toString(),
                  user = currentUser
             )
+           lifecycleScope.launch(Dispatchers.IO) {
 
-            viewModel.dodajApartman(noviApartman)
-            commentViewModel.azuriranjePoena(currentUser.email.toString(), 6)
-        }
+               val result = viewModel.proveriDuplikatApartmana(noviApartman)
+
+               if (result) {
+                   activity?.runOnUiThread {
+                       Toast.makeText(requireContext(), "Vec postoji", Toast.LENGTH_SHORT).show()
+                   }
+
+               } else {
+                   viewModel.dodajApartman(noviApartman)
+                   activity?.runOnUiThread {
+                       Toast.makeText(requireContext(), "Uspešno ste dodali stan", Toast.LENGTH_SHORT).show()
+                   }
+                   commentViewModel.azuriranjePoena(currentUser.email.toString(), 6)
+                   activity?.runOnUiThread {
+                       Toast.makeText(requireContext(), "Dobili ste 6 poena", Toast.LENGTH_SHORT).show()
+                       binding.tvAdresa.text.clear()
+                       binding.etPovrsina.text.clear()
+                       binding.etBrojSoba.text.clear()
+                       binding.tvtelefon.text.clear()
+                       binding.ptEmailKontakt.text.clear()
+                       binding.idVerKod.text.clear()
+                       binding.ptSprat.text.clear()
+                   }
+
+               }
+           }
+
+
+       }
     }
 
-
-    private fun parseLatLngFromString(input: String?): LatLng? {
-        try {
-
-            val startIndex = input!!.indexOf("(")
-            val endIndex = input.indexOf(")")
-
-            if (startIndex != -1 && endIndex != -1) {
-                val coordinates = input.substring(startIndex + 1, endIndex)
-                val parts = coordinates.split(",")
-
-                if (parts.size == 2) {
-                    val latitude = parts[0].trim().toDouble()
-                    val longitude = parts[1].trim().toDouble()
-
-                    return LatLng(latitude, longitude)
-                }
-            }
-        } catch (e: NumberFormatException) {
-            e.printStackTrace()
-        }
-
-        return null
-    }
 }

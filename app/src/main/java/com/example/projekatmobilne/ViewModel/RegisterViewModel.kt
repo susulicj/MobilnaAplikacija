@@ -27,7 +27,7 @@ class RegisterViewModel : ViewModel() {
         korisnickoIme: String,
         imeIprezime: String,
         brojTelefona: String,
-        profileImageUrl: String
+        profileImageUrl: String?
     ) {
         if (email.isEmpty() || korisnickoIme.isEmpty() || password.isEmpty() || imeIprezime.isEmpty() || brojTelefona.isEmpty()) {
             _errorMessage.value = "Molim vas popunite sva polja"
