@@ -131,7 +131,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         sharedViewModel.getListaApartmana()?.observe(viewLifecycleOwner, Observer { listaApartmana ->
 
             val targetMarkers = mutableListOf<Marker>()
-            if(listaApartmana.isEmpty()){
+            /*if(listaApartmana.isEmpty()){
                 activity?.runOnUiThread {
                     Toast.makeText(requireContext(), "Ne postoje stnovi sa takvom osobinom", Toast.LENGTH_SHORT).show()
                 }
@@ -150,8 +150,37 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
                 marker?.tag = apartman
                 targetMarkers.add(marker!!)
              }
-            }
+            }*/
+            val latLngApartmaniMap = mutableMapOf<LatLng, MutableList<Apartman>>()
 
+            for (apartman in listaApartmana) {
+                val latLng = apartman.latlng
+                if (latLng != null) {
+                    if (latLngApartmaniMap.containsKey(latLng)) {
+                        latLngApartmaniMap[latLng]!!.add(apartman)
+                    } else {
+                        val novaListaApartmana = mutableListOf(apartman)
+                        latLngApartmaniMap[latLng] = novaListaApartmana
+                    }
+                }
+            }
+            Log.d("prikaz", "$latLngApartmaniMap")
+
+            for ((latLng, apartmani) in latLngApartmaniMap) {
+                val marker = mMap.addMarker(
+                    MarkerOptions()
+                        .position(latLng)
+                        .title(apartmani[0].adresa) // Koristite prvi apartman za naslov markera
+                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
+                )
+                marker!!.tag = apartmani
+                Log.d("prikaz", "${marker.tag}")
+
+
+                targetMarkers.add(marker)
+
+            }
+            Log.d("prikaz", "$targetMarkers")
 
             locationCallback = object : LocationCallback() {
                 override fun onLocationResult(locationResult: LocationResult) {
@@ -202,14 +231,19 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
            mMap.setOnMarkerClickListener{marker->
 
-            val clickedApartman = marker.tag as? Apartman
+          /*  val clickedApartman = marker.tag as? Apartman
             Log.d("apartman kliknutii", "$clickedApartman")
             if (clickedApartman != null) {
                 viewModelshared.setclickedApartman(clickedApartman)
             }
 
             val action = MapsFragmentDirections.actionMapsFragmentToCommentsFragment()
-            view?.findNavController()?.navigate(action)
+            view?.findNavController()?.navigate(action)*/
+               val kliknutiMarker = marker.tag as? List<Apartman>
+               if(kliknutiMarker != null){
+                   viewModelshared.setListaMarkera(kliknutiMarker)
+               }
+               view?.findNavController()!!.navigate(R.id.action_mapsFragment_to_listaApartmanaMarkerFragment)
 
             true
         }

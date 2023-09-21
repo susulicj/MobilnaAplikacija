@@ -31,6 +31,9 @@
         <action
             android:id="@+id/action_mapsFragment_to_commentsFragment"
             app:destination="@id/commentsFragment" />
+        <action
+            android:id="@+id/action_mapsFragment_to_listaApartmanaMarkerFragment"
+            app:destination="@id/listaApartmanaMarkerFragment" />
     </fragment>
     <fragment
         android:id="@+id/addMarkerFragment"
@@ -93,6 +96,15 @@
             app:destination="@id/homeProfileFragment" />
         <action
             android:id="@+id/action_podaciApartmanFragment_to_commentsFragment"
+            app:destination="@id/commentsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/listaApartmanaMarkerFragment"
+        android:name="com.example.projekatmobilne.Fragments.ListaApartmanaMarkerFragment"
+        android:label="fragment_lista_apartmana_marker"
+        tools:layout="@layout/fragment_lista_apartmana_marker" >
+        <action
+            android:id="@+id/action_listaApartmanaMarkerFragment_to_commentsFragment"
             app:destination="@id/commentsFragment" />
     </fragment>
 </navigation>

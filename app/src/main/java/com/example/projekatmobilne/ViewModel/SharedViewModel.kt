@@ -9,7 +9,16 @@ import com.example.projekatmobilne.DataClasses.Apartman
 class SharedViewModel: ViewModel() {
     private val clickedApartmanLiveData =  MutableLiveData<Apartman>()
     private val listaApartmanaLiveData = MutableLiveData<List<Apartman>>()
+    private val listaMarkera = MutableLiveData<List<Apartman>>()
 
+    fun getListaMakera(): LiveData<List<Apartman>>{
+        return listaMarkera
+    }
+
+    fun setListaMarkera(apartmani: List<Apartman>) {
+        listaMarkera.value = apartmani
+        Log.d("filterrr shared", "${listaMarkera.value}" )
+    }
     fun getclickedApartman(): LiveData<Apartman> {
         return clickedApartmanLiveData
     }
