@@ -49,7 +49,7 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
     private lateinit var locationCallback: LocationCallback
     private lateinit var viewModel: AddApartmentViewModel
     private lateinit var viewModelshared: SharedViewModel
-    private val proximityDistance = 1000000.0 // Minimalna udaljenost
+    private val proximityDistance = 50// Minimalna udaljenost
     val sharedViewModel : SharedViewModel by activityViewModels()
     private val requestingLocationUpdates = true
     private lateinit var locationRequest: LocationRequest

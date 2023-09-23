@@ -426,7 +426,7 @@ class HomeProfileFragment : Fragment() {
     fun calculateDistance(
         lat1: Double, lon1: Double, lat2: Double, lon2: Double
     ): Double {
-        val radius = 6371 // Zemljina srednji radijus u kilometrima
+        val radius = 6371000 // Zemljina srednji radijus u metrima
 
         val dLat = Math.toRadians(lat2 - lat1)
         val dLon = Math.toRadians(lon2 - lon1)
