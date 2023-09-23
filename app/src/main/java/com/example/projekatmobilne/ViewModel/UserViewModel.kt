@@ -46,7 +46,7 @@ class UserViewModel: ViewModel() {
         })
     }
 
-    fun vratiTrenutngKorisnika(email: String, callback: (User?) -> Unit)
+ /*   fun vratiTrenutngKorisnika(email: String, callback: (User?) -> Unit)
     {
         val query = databaseReference.child("Users").orderByChild("email").equalTo(email)
 
@@ -67,7 +67,26 @@ class UserViewModel: ViewModel() {
                 callback(null)
             }
         })
-    }
+    }*/
+ suspend fun vratiTrenutngKorisnika(email: String): User? = withContext(Dispatchers.IO) {
+     val query = databaseReference.child("Users").orderByChild("email").equalTo(email)
+
+     return@withContext try {
+         val dataSnapshot = query.get().await()
+
+         if (dataSnapshot.exists()) {
+             for (userSnapshot in dataSnapshot.children) {
+                 val user = userSnapshot.getValue(User::class.java)
+                 return@withContext user
+             }
+         }
+         null
+     } catch (e: Exception) {
+        Log.d("prikai", "$e")
+         null
+     }
+ }
+
 
     suspend fun vratiEmail(ime:String) : DataSnapshot?{
         return try{

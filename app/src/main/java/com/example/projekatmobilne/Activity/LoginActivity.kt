@@ -47,6 +47,7 @@ class LoginActivity : AppCompatActivity() {
         }
         binding.btnLogin1.setOnClickListener{
             performLogin()
+
         }
 
 
@@ -72,8 +73,11 @@ class LoginActivity : AppCompatActivity() {
                     viewModel.loginSuccess.observe(this@LoginActivity) { success ->
                         if (success) {
                             Log.w("TAG", "Uspesna prijava")
+                            binding.ptEmail.text.clear()
+                            binding.etPassword.text.clear()
                             val intent = Intent(this@LoginActivity, ProfileActivity::class.java)
                             startActivity(intent)
+
                         }
                     }
 

@@ -30,6 +30,8 @@ class AddApartmentViewModel : ViewModel() {
             "listaOcena" to apartman.listaOcena,
             "sprat" to apartman.sprat,
             "datumKreiranja" to apartman.datumKreiranja,
+            "brojStana" to apartman.brojStana,
+            "brojZgrade" to apartman.brojZgrade,
             "user" to apartman.user,
 
         )
@@ -189,6 +191,8 @@ class AddApartmentViewModel : ViewModel() {
                         podaciApartmana["listaOcena"] as MutableList<Int>?,
                         podaciApartmana["sprat"] as Long?,
                         podaciApartmana["datumKreiranja"] as String?,
+                        podaciApartmana["brojStana"] as Long?,
+                        podaciApartmana["brojZgrade"] as Long?,
                         user
                     )
                     listaApartmana.add(apartman)
@@ -240,6 +244,8 @@ class AddApartmentViewModel : ViewModel() {
         val querySnapshot = apartmanRef
             .whereEqualTo("adresa", apartman.adresa)
             .whereEqualTo("sprat", apartman.sprat)
+            .whereEqualTo("brojZgrade", apartman.brojZgrade)
+            .whereEqualTo("brojStana", apartman.brojStana)
             .whereEqualTo("latlng", apartman.latlng)
             .get()
             .await()

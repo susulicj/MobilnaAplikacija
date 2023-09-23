@@ -29,9 +29,6 @@
         android:label="fragment_maps"
         tools:layout="@layout/fragment_maps" >
         <action
-            android:id="@+id/action_mapsFragment_to_commentsFragment"
-            app:destination="@id/commentsFragment" />
-        <action
             android:id="@+id/action_mapsFragment_to_listaApartmanaMarkerFragment"
             app:destination="@id/listaApartmanaMarkerFragment" />
     </fragment>
@@ -55,6 +52,9 @@
         <action
             android:id="@+id/action_commentsFragment_to_homeProfileFragment"
             app:destination="@id/homeProfileFragment" />
+        <action
+            android:id="@+id/action_commentsFragment_to_listaApartmanaMarkerFragment"
+            app:destination="@id/listaApartmanaMarkerFragment" />
     </fragment>
     <fragment
         android:id="@+id/usersListFragment"
@@ -97,6 +97,9 @@
         <action
             android:id="@+id/action_podaciApartmanFragment_to_commentsFragment"
             app:destination="@id/commentsFragment" />
+        <action
+            android:id="@+id/action_podaciApartmanFragment_to_listaApartmanaMarkerFragment"
+            app:destination="@id/listaApartmanaMarkerFragment" />
     </fragment>
     <fragment
         android:id="@+id/listaApartmanaMarkerFragment"
@@ -106,5 +109,8 @@
         <action
             android:id="@+id/action_listaApartmanaMarkerFragment_to_commentsFragment"
             app:destination="@id/commentsFragment" />
+        <action
+            android:id="@+id/action_listaApartmanaMarkerFragment_to_homeProfileFragment"
+            app:destination="@id/homeProfileFragment" />
     </fragment>
 </navigation>

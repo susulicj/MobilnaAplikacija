@@ -48,6 +48,7 @@ class HomeProfileFragment : Fragment() {
     private lateinit var locationRequest: LocationRequest
     private lateinit var locationCallback: LocationCallback
     private val requestingLocationUpdates = true
+    private lateinit var lista : MutableList<Apartman>
 
 
 
@@ -70,6 +71,9 @@ class HomeProfileFragment : Fragment() {
     ): View? {
         binding = FragmentHomeProfileBinding.inflate(inflater, container, false)
         fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity())
+        apartmanViewModel = ViewModelProvider(this).get(AddApartmentViewModel::class.java)
+         lista = mutableListOf<Apartman>()
+
 
 
 
@@ -79,16 +83,19 @@ class HomeProfileFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        apartmanViewModel = ViewModelProvider(this).get(AddApartmentViewModel::class.java)
+
+
+        lifecycleScope.launch(Dispatchers.IO) {
+            lista = apartmanViewModel.preuzmiSveApartmane() as MutableList<Apartman>
+        }
 
 
         locationRequest =   LocationRequest.Builder(Priority.PRIORITY_HIGH_ACCURACY, 60).apply {
             setGranularity(Granularity.GRANULARITY_PERMISSION_LEVEL)
             setWaitForAccurateLocation(true)
-            Log.d("Location", "Provera")
-        }.build()
+            }.build()
 
-        // Inicijalizuj LocationCallback
+
        locationCallback = object : LocationCallback() {
             override fun onLocationResult(locationResult: LocationResult) {
                 super.onLocationResult(locationResult)
@@ -97,16 +104,6 @@ class HomeProfileFragment : Fragment() {
                     currentLocation = it
                     val latitude = currentLocation?.latitude
                     val longitude = currentLocation?.longitude
-                    Log.d("Location", "Latitude: $latitude, Longitude: $longitude")
-                }
-            }
-            override fun onLocationAvailability(locationAvailability: LocationAvailability) {
-                if (!locationAvailability.isLocationAvailable) {
-                    // Lokacija nije dostupna
-                    Log.e("Location", "Lokacija nije dostupna")
-
-                    // Prikazivanje toast poruke da lokacija nije dostupna
-                    Toast.makeText(requireContext(), "Lokacija nije dostupna", Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -118,14 +115,6 @@ class HomeProfileFragment : Fragment() {
         } else {
             requestPermissions()
         }
-
-
-
-
-
-
-
-
 
 
         binding.btnListaKorsnika.setOnClickListener{
@@ -173,14 +162,14 @@ class HomeProfileFragment : Fragment() {
                 Manifest.permission.ACCESS_COARSE_LOCATION
             ) == PackageManager.PERMISSION_GRANTED
         ) {
-            // Imate dozvolu za pristup lokaciji, sada možete pozvati requestLocationUpdates
+
             fusedLocationClient.requestLocationUpdates(
                 locationRequest,
                 locationCallback,
                 Looper.myLooper()
             )
         } else {
-            // Nemate dozvolu za pristup lokaciji, zatražite je od korisnika
+
             requestPermissions(
                 arrayOf(
                     Manifest.permission.ACCESS_FINE_LOCATION,
@@ -208,7 +197,7 @@ class HomeProfileFragment : Fragment() {
                 if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     requestLocationUpdates()
                 } else {
-                    // Ovde možete obavestiti korisnika da su dozvole potrebne za dobijanje lokacije
+
                 }
             }
         }
@@ -232,7 +221,7 @@ class HomeProfileFragment : Fragment() {
         var radioGroup = binding.radioGroup
         var radioGroupFilter = binding.radioGroupFiltriranje
         var filter = binding.ptFilter
-        var lista = mutableListOf<Apartman>()
+
 
 
         radioGroupFilter.setOnCheckedChangeListener{ group, checkedID ->
@@ -253,10 +242,10 @@ class HomeProfileFragment : Fragment() {
      /*  apartmanViewModel.preuzmiSveApartmane { listaApartmana ->
             lista.addAll(listaApartmana)
         }*/
-        lifecycleScope.launch(Dispatchers.IO){
+      /*  lifecycleScope.launch(Dispatchers.IO){
             lista = apartmanViewModel.preuzmiSveApartmane() as MutableList<Apartman>
             // Ovde možete raditi sa listom apartmana
-        }
+        }*/
 
 
 
@@ -267,66 +256,170 @@ class HomeProfileFragment : Fragment() {
             val selectedRadioButtonId = radioGroup.checkedRadioButtonId
             val korisnikovFilter = binding.ptFilter.text.toString()
 
-            if(selectedFilterID != -1){
-                when (selectedFilterID){
-                    R.id.IDbezFiltriranja-> {
-                        sharedViewModel.setListaApartmana(lista)
 
-                    }
-                    R.id.IDPoKorisniku-> {
-                        val filtriranaLista = lista.filter {apartman ->
-                            apartman.user!!.email == korisnikovFilter
-                        }
-                        sharedViewModel.setListaApartmana(filtriranaLista)
+                if (selectedFilterID != -1) {
+                    when (selectedFilterID) {
+                        R.id.IDbezFiltriranja -> {
+                            sharedViewModel.setListaApartmana(lista)
+                            if (selectedRadioButtonId != -1) {
+                                when (selectedRadioButtonId) {
+                                    R.id.radioButton1 -> {
+                                        it.findNavController()
+                                            .navigate(R.id.action_homeProfileFragment_to_mapsFragment)
+                                    }
+                                    R.id.radioButton2 -> {
+                                        it.findNavController()
+                                            .navigate(R.id.action_homeProfileFragment_to_apartmanListFragment)
+                                    }
 
-                    }
-                    R.id.IDrbSprat->{
-                        val filtriranaLista = lista.filter{apartman ->
-                            apartman.sprat == korisnikovFilter.toLong()
+                                }
+                            } else {
+                                Toast.makeText(requireActivity(), "Morate izabrati opciju", Toast.LENGTH_SHORT)
+                                    .show()
+                            }
+
                         }
-                        sharedViewModel.setListaApartmana(filtriranaLista)
-                    }
-                    R.id.IDrbRadius->{
-                        val filtriranaLista = mutableListOf<Apartman>()
-                        val radiusInKm = korisnikovFilter.toDouble()
-                        for(data in lista){
-                            val distance = calculateDistance(currentLocation.latitude, currentLocation.longitude, data.latlng!!.latitude, data.latlng!!.longitude)
-                            if(distance <= radiusInKm){
-                                filtriranaLista.add(data)
+                        R.id.IDPoKorisniku -> {
+                            if(korisnikovFilter.isEmpty())
+                            {
+                                Toast.makeText(requireActivity(), "Morate uneti parametar za filtriranje", Toast.LENGTH_SHORT).show()
+
+                            }else {
+                                val filtriranaLista = lista.filter { apartman ->
+                                    apartman.user!!.email == korisnikovFilter
+                                }
+                                sharedViewModel.setListaApartmana(filtriranaLista)
+
+                                if (selectedRadioButtonId != -1) {
+                                    when (selectedRadioButtonId) {
+                                        R.id.radioButton1 -> {
+                                            it.findNavController()
+                                                .navigate(R.id.action_homeProfileFragment_to_mapsFragment)
+                                        }
+                                        R.id.radioButton2 -> {
+                                            it.findNavController()
+                                                .navigate(R.id.action_homeProfileFragment_to_apartmanListFragment)
+                                        }
+
+                                    }
+                                } else {
+                                    Toast.makeText(requireActivity(), "Morate izabrati opciju", Toast.LENGTH_SHORT)
+                                        .show()
+                                }
+                            }
+                        }
+                        R.id.IDrbSprat -> {
+                            if(korisnikovFilter.isEmpty())
+                            {
+                                Toast.makeText(requireActivity(), "Morate uneti parametar za filtriranje", Toast.LENGTH_SHORT).show()
+
+                            }else {
+                                val filtriranaLista = lista.filter { apartman ->
+                                    apartman.sprat == korisnikovFilter.toLong()
+                                }
+                                sharedViewModel.setListaApartmana(filtriranaLista)
+
+                                if (selectedRadioButtonId != -1) {
+                                    when (selectedRadioButtonId) {
+                                        R.id.radioButton1 -> {
+                                            it.findNavController()
+                                                .navigate(R.id.action_homeProfileFragment_to_mapsFragment)
+                                        }
+                                        R.id.radioButton2 -> {
+                                            it.findNavController()
+                                                .navigate(R.id.action_homeProfileFragment_to_apartmanListFragment)
+                                        }
+
+                                    }
+                                } else {
+                                    Toast.makeText(requireActivity(), "Morate izabrati opciju", Toast.LENGTH_SHORT)
+                                        .show()
+                                }
+                            }
+                        }
+                        R.id.IDrbRadius -> {
+                            if(korisnikovFilter.isEmpty())
+                            {
+                                Toast.makeText(requireActivity(), "Morate uneti parametar za filtriranje", Toast.LENGTH_SHORT).show()
+
+                            }else {
+
+                                val filtriranaLista = mutableListOf<Apartman>()
+                                val radiusInKm = korisnikovFilter.toDouble()
+                                for (data in lista) {
+                                    val distance = calculateDistance(
+                                        currentLocation.latitude,
+                                        currentLocation.longitude,
+                                        data.latlng!!.latitude,
+                                        data.latlng!!.longitude
+                                    )
+                                    if (distance <= radiusInKm) {
+                                        filtriranaLista.add(data)
+                                    }
+                                }
+
+                                sharedViewModel.setListaApartmana(filtriranaLista)
+
+                                if (selectedRadioButtonId != -1) {
+                                    when (selectedRadioButtonId) {
+                                        R.id.radioButton1 -> {
+                                            it.findNavController()
+                                                .navigate(R.id.action_homeProfileFragment_to_mapsFragment)
+                                        }
+                                        R.id.radioButton2 -> {
+                                            it.findNavController()
+                                                .navigate(R.id.action_homeProfileFragment_to_apartmanListFragment)
+                                        }
+
+                                    }
+                                } else {
+                                    Toast.makeText(requireActivity(), "Morate izabrati opciju", Toast.LENGTH_SHORT)
+                                        .show()
+                                }
+                            }
+                        }
+                        R.id.IDPoDatumu -> {
+                            val korisnikovfilter = binding.FilterDatum.text.toString()
+                            if(korisnikovfilter.isEmpty())
+                            {
+                                Toast.makeText(requireActivity(), "Morate uneti parametar za filtriranje", Toast.LENGTH_SHORT).show()
+
+                            }else {
+
+                                val filtriranaLista = lista.filter { apartman ->
+                                    apartman.datumKreiranja == korisnikovfilter
+                                }
+                                sharedViewModel.setListaApartmana(filtriranaLista)
+
+                                if (selectedRadioButtonId != -1) {
+                                    when (selectedRadioButtonId) {
+                                        R.id.radioButton1 -> {
+                                            it.findNavController()
+                                                .navigate(R.id.action_homeProfileFragment_to_mapsFragment)
+                                        }
+                                        R.id.radioButton2 -> {
+                                            it.findNavController()
+                                                .navigate(R.id.action_homeProfileFragment_to_apartmanListFragment)
+                                        }
+
+                                    }
+                                } else {
+                                    Toast.makeText(requireActivity(), "Morate izabrati opciju", Toast.LENGTH_SHORT)
+                                        .show()
+                                }
                             }
                         }
 
-                        sharedViewModel.setListaApartmana(filtriranaLista)
                     }
-                    R.id.IDPoDatumu->{
-
-                        val filtriranaLista = lista.filter {apartman ->
-                            apartman.datumKreiranja == binding.FilterDatum.text.toString()
-                        }
-                        sharedViewModel.setListaApartmana(filtriranaLista)
-
-                    }
-
                 }
-            }
 
-            if(selectedRadioButtonId != -1){
-                when (selectedRadioButtonId) {
-                    R.id.radioButton1 -> {
-                        it.findNavController().navigate(R.id.action_homeProfileFragment_to_mapsFragment)
-                    }
-                    R.id.radioButton2 -> {
-                        it.findNavController().navigate(R.id.action_homeProfileFragment_to_apartmanListFragment)
-                    }
 
-                }
-            }else{
-                Toast.makeText(requireActivity(), "Morate izabrati opciju", Toast.LENGTH_SHORT).show()
+
+
             }
 
 
 
-        }
     }
 
 

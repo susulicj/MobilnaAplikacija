@@ -1,10 +1,14 @@
 package com.example.projekatmobilne
 
+import android.provider.Settings.Global.getString
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.TextView
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
@@ -24,7 +28,11 @@ class MyRecyclerViewMarker (private var markerList: List<Apartman>,  private val
 
     override fun onBindViewHolder(holder: MyViewHolderMarker, position: Int) {
        val marker: Apartman = markerList[position]
-        holder.mySprat.text = marker.sprat.toString()
+
+        val broj = "Stan" + " " + "broj" + " " + marker.brojStana.toString()
+        Log.d("prikaz", "$broj")
+        holder.mySprat.text = broj
+
         holder.btnDetalji.setOnClickListener{
            viewModel.setclickedApartman(marker)
             navController.navigate(R.id.action_listaApartmanaMarkerFragment_to_commentsFragment)
@@ -41,5 +49,5 @@ class MyRecyclerViewMarker (private var markerList: List<Apartman>,  private val
 
 class MyViewHolderMarker(val view: View) : RecyclerView.ViewHolder(view){
     var mySprat = view.findViewById<TextView>(R.id.IdDobijenaVrednost)
-    var btnDetalji = itemView.findViewById<Button>(R.id.btnKomentariIOene)
+    var btnDetalji = itemView.findViewById<ImageButton>(R.id.btnKomentariIOene)
 }

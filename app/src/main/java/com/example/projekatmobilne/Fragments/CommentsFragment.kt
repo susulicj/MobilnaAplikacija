@@ -75,7 +75,7 @@ class CommentsFragment : Fragment() {
         commentList = arrayListOf()
 
         binding.imageButton3.setOnClickListener{
-            it.findNavController().navigate(R.id.action_commentsFragment_to_homeProfileFragment)
+            it.findNavController().navigate(R.id.action_commentsFragment_to_listaApartmanaMarkerFragment)
         }
         binding.detalji.setOnClickListener{
             it.findNavController().navigate(R.id.action_commentsFragment_to_podaciApartmanFragment)
@@ -91,6 +91,8 @@ class CommentsFragment : Fragment() {
             binding.detalji.visibility = View.INVISIBLE
             binding.tvProsecnaOcena.visibility = View.INVISIBLE
             binding.vratiSeNazad.visibility = View.VISIBLE
+            binding.twOcena.visibility = View.INVISIBLE
+            binding.imageButton3.visibility = View.INVISIBLE
         }
 
         binding.vratiSeNazad.setOnClickListener{
@@ -101,6 +103,9 @@ class CommentsFragment : Fragment() {
             binding.myRecyclerView.visibility = View.VISIBLE
             binding.detalji.visibility = View.VISIBLE
             binding.tvProsecnaOcena.visibility = View.VISIBLE
+            binding.twOcena.visibility = View.VISIBLE
+            binding.imageButton3.visibility = View.VISIBLE
+
             binding.ptKomentar.text.clear()
             binding.vratiSeNazad.visibility = View.INVISIBLE
             hideKeyboard(requireActivity())
@@ -231,6 +236,7 @@ class CommentsFragment : Fragment() {
                 binding.tvProsecnaOcena.visibility = View.VISIBLE
                 binding.ptKomentar.text.clear()
                 binding.vratiSeNazad.visibility = View.INVISIBLE
+
                     hideKeyboard(requireActivity())
 
                 Log.d("apartman kliknutiii", "$noviKomentar")

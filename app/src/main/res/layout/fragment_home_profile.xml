@@ -118,7 +118,7 @@
             android:id="@+id/IDrbRadius"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Po radijusu" />
+            android:text="Po radijusu(u m²)" />
 
         <RadioButton
             android:id="@+id/IDPoDatumu"

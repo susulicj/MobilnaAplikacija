@@ -14,6 +14,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import com.example.projekatmobilne.DataClasses.Apartman
 import com.example.projekatmobilne.DataClasses.User
+import com.example.projekatmobilne.MyRecyclerViewMarker
 import com.example.projekatmobilne.R
 import com.example.projekatmobilne.ViewModel.AddApartmentViewModel
 import com.example.projekatmobilne.ViewModel.AddCommentViewModel
@@ -65,12 +66,16 @@ class PodaciApartmanFragment : Fragment() {
         viewModel.getclickedApartman().observe(viewLifecycleOwner, Observer { apartman ->
             if (apartman != null) {
                 currentApartman = apartman
-                binding.IdAdresaApartmana.text = currentApartman.adresa
-                binding.IdemailStana.text = currentApartman.email
-                binding.idBrojSobaApatmana.text = currentApartman.brojSoba.toString()
-                binding.IdPovrsinaStana.text = currentApartman.povrsina.toString()
-                binding.IdSpratStana.text = currentApartman.sprat.toString()
-                binding.IdBrojTelefonaStana.text = currentApartman.brojTelefona.toString()
+                val apartman = currentApartman // Pretpostavimo da je ovo vaš trenutni apartman
+
+                binding.IdAdresaApartmana.text = "Ulica: ${apartman.adresa}"
+                binding.IdemailStana.text = "Email: ${apartman.email}"
+                binding.idBrojSobaApatmana.text = "Broj soba:  ${apartman.brojSoba}"
+                binding.IdPovrsinaStana.text = "Površina: ${apartman.povrsina} m²"
+                binding.IdSpratStana.text = "Broj: ${apartman.brojZgrade}/${apartman.sprat}/${apartman.brojStana}"
+                binding.IdBrojTelefonaStana.text = "Broj telefona: ${apartman.brojTelefona}"
+
+
                 verKod = currentApartman.verifikacioniKod
                 if(currentApartman.user!!.email.toString() == currentUser.email.toString()){
                     Log.d("vidljivost", "${currentApartman.user!!.email.toString()}")
@@ -88,7 +93,22 @@ class PodaciApartmanFragment : Fragment() {
             Toast.makeText(requireContext(), "Uspešno ste izbrisali stan", Toast.LENGTH_SHORT).show()
             commentviewModel.azuriranjePoena(currentUser.email.toString(), -2)
             Toast.makeText(requireContext(), "Smanjeno Vam je 2 poena", Toast.LENGTH_SHORT).show()
-            it.findNavController().navigate(R.id.action_podaciApartmanFragment_to_homeProfileFragment)
+
+
+            var filtriranaLista : List<Apartman>? = null
+            viewModel.getListaMakera().observe(viewLifecycleOwner, Observer{apartmani->
+                Log.d("prikaz", "$apartmani")
+
+                  filtriranaLista = apartmani.filter {apartman->
+                    apartman.verifikacioniKod != verKod }
+
+
+
+
+            })
+
+            viewModel.setListaMarkera(filtriranaLista!!)
+            it.findNavController().navigate(R.id.action_podaciApartmanFragment_to_listaApartmanaMarkerFragment)
 
         }
 

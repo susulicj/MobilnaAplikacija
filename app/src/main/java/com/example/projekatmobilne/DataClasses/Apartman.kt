@@ -19,5 +19,7 @@ data class Apartman(
     var listaOcena: MutableList<Int>? = mutableListOf(),
     val sprat: Long? = null,
     var datumKreiranja: String? = null,
+    var brojStana: Long? = null,
+    var brojZgrade: Long? =null,
     val user: User? = null
 )

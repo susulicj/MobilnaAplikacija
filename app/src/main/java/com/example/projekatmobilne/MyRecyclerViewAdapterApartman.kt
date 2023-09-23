@@ -20,12 +20,14 @@ class MyRecyclerViewAdapterApartman(private var apartmanList: List<Apartman>) : 
 
     override fun onBindViewHolder(holder: MyViewHolderApartman, position: Int) {
         val apartman: Apartman = apartmanList[position]
-        holder.adresa.text = apartman.adresa
-        holder.povrsina.text = apartman.povrsina.toString()
-        holder.brojSoba.text = apartman.brojSoba.toString()
-        holder.brojTelefona.text = apartman.brojTelefona.toString()
-        holder.emaill.text = apartman.email
-        holder.sprat.text = apartman.sprat.toString()
+        holder.adresa.text = "Ulica: ${apartman.adresa}"
+        holder.povrsina.text = "Povrsina: ${apartman.povrsina.toString()} m²"
+        holder.brojSoba.text = "Broj soba: ${apartman.brojSoba.toString()}"
+        holder.brojTelefona.text = "Broj telefona: ${apartman.brojTelefona.toString()}"
+        holder.emaill.text = "Email: ${apartman.email}"
+        holder.brojapa.text = (position + 1).toString()
+        holder.broj.text = "Broj: ${apartman.brojZgrade}/${apartman.sprat}/${apartman.brojStana} "
+
 
     }
 
@@ -39,7 +41,8 @@ class MyViewHolderApartman(val view: View): RecyclerView.ViewHolder(view){
     val brojSoba = view.findViewById<TextView>(R.id.IdDobijeniBrojSoba)
     val brojTelefona = view.findViewById<TextView>(R.id.IdDobijeniBrojTelefona)
     val emaill = view.findViewById<TextView>(R.id.IdDobijeniEmailKontakt)
-    val sprat = view.findViewById<TextView>(R.id.IdDobijeniSprat)
+    val brojapa = view.findViewById<TextView>(R.id.broj)
+    val broj = view.findViewById<TextView>(R.id.IddobijeniBrojStana)
 
 
 

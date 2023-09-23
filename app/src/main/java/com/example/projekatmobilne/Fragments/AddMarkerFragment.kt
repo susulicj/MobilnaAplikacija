@@ -42,7 +42,6 @@ class AddMarkerFragment : Fragment()  {
    private lateinit var viewModel : AddApartmentViewModel
    private lateinit var commentViewModel : AddCommentViewModel
    private lateinit var binding: FragmentAddMarkerBinding
-   private lateinit var latLng : String
    private lateinit var lnglat: LatLng
    private lateinit var currentUser: User
    private lateinit var currentFirebaseUser: FirebaseUser
@@ -133,6 +132,8 @@ class AddMarkerFragment : Fragment()  {
                  listaOcena = mutableListOf(),
                  sprat = binding.ptSprat.text.toString().toLong(),
                  datumKreiranja = LocalDate.now().toString(),
+                 brojStana = binding.ptBrojStana.text.toString().toLong(),
+                 brojZgrade = binding.etBrojZgrade.text.toString().toLong(),
                  user = currentUser
             )
            lifecycleScope.launch(Dispatchers.IO) {
@@ -159,6 +160,8 @@ class AddMarkerFragment : Fragment()  {
                        binding.ptEmailKontakt.text.clear()
                        binding.idVerKod.text.clear()
                        binding.ptSprat.text.clear()
+                       binding.ptBrojStana.text.clear()
+                       binding.etBrojZgrade.text.clear()
                    }
 
                }
