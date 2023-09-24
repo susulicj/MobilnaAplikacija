@@ -11,10 +11,7 @@ import android.view.ViewGroup
 import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.clearFragmentResult
-import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
-import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -26,16 +23,11 @@ import com.example.projekatmobilne.MyRecyclerViewAdapter
 import com.example.projekatmobilne.R
 import com.example.projekatmobilne.ViewModel.AddApartmentViewModel
 import com.example.projekatmobilne.ViewModel.AddCommentViewModel
-import com.example.projekatmobilne.ViewModel.CommentViewModel
 import com.example.projekatmobilne.ViewModel.SharedViewModel
 import com.example.projekatmobilne.databinding.FragmentCommentsBinding
-import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.EventListener
-import com.google.firebase.firestore.FirebaseFirestore
-import com.google.firebase.firestore.QuerySnapshot
-import kotlinx.coroutines.tasks.await
+
 
 class CommentsFragment : Fragment() {
     private lateinit var binding: FragmentCommentsBinding
@@ -150,7 +142,6 @@ class CommentsFragment : Fragment() {
         }
 
         btnSubmit.setOnClickListener{
-            val message = ratingBar.rating.toString()
             var kliknutiApartman: Apartman? = null
             viewModel.getclickedApartman().observe(viewLifecycleOwner, Observer { apartman ->
                 if (apartman != null) {
@@ -200,46 +191,41 @@ class CommentsFragment : Fragment() {
     fun dodajKomentar(){
 
         var kliknutiApartman: Apartman? = null
-
-
-
-            binding.btnDodajKomentar.setOnClickListener {
-                if(binding.ptKomentar.text.isEmpty()){
+        binding.btnDodajKomentar.setOnClickListener{
+            if(binding.ptKomentar.text.isEmpty()){
                     Toast.makeText(requireContext(), "Unesie tekst", Toast.LENGTH_SHORT).show()
-
-                }else {
-                viewModel.getclickedApartman().observe(viewLifecycleOwner, Observer { apartman ->
+            }else {
+                 viewModel.getclickedApartman().observe(viewLifecycleOwner, Observer { apartman ->
                     if (apartman != null) {
                         kliknutiApartman = apartman
                         Log.d("apartman kliknutiii", "$apartman")
                     }
-                })
+                 })
 
-                val noviKomentar = Comment(
+                 val noviKomentar = Comment(
                     tekst = binding.ptKomentar.text.toString(),
                     user = currentUser,
                     apartman = kliknutiApartman,
                     verifikacioniKodApartman = kliknutiApartman!!.verifikacioniKod
-                )
+                 )
 
-                commentViewModel.dodajKomentar(noviKomentar)
-                commentViewModel.azuriranjePoena(currentUser.email.toString(), 5)
-                Toast.makeText(requireContext(), "Dobili ste 5 poena", Toast.LENGTH_SHORT).show()
+                 commentViewModel.dodajKomentar(noviKomentar)
+                 commentViewModel.azuriranjePoena(currentUser.email.toString(), 5)
+                 Toast.makeText(requireContext(), "Dobili ste 5 poena", Toast.LENGTH_SHORT).show()
 
-                EventChangeListener()
-                binding.IdNaslov.visibility = View.VISIBLE
-                binding.ratingBar.visibility = View.VISIBLE
-                binding.btnSubmit.visibility = View.VISIBLE
-                binding.Idnatpis.visibility = View.VISIBLE
-                binding.myRecyclerView.visibility = View.VISIBLE
-                binding.detalji.visibility = View.VISIBLE
-                binding.tvProsecnaOcena.visibility = View.VISIBLE
-                binding.ptKomentar.text.clear()
-                binding.vratiSeNazad.visibility = View.INVISIBLE
+                 EventChangeListener()
+                 binding.IdNaslov.visibility = View.VISIBLE
+                 binding.ratingBar.visibility = View.VISIBLE
+                 binding.btnSubmit.visibility = View.VISIBLE
+                 binding.Idnatpis.visibility = View.VISIBLE
+                 binding.myRecyclerView.visibility = View.VISIBLE
+                 binding.detalji.visibility = View.VISIBLE
+                 binding.tvProsecnaOcena.visibility = View.VISIBLE
+                 binding.ptKomentar.text.clear()
+                 binding.vratiSeNazad.visibility = View.INVISIBLE
+                 hideKeyboard(requireActivity())
 
-                    hideKeyboard(requireActivity())
-
-                Log.d("apartman kliknutiii", "$noviKomentar")
+                 Log.d("apartman kliknutiii", "$noviKomentar")
             }
         }
 

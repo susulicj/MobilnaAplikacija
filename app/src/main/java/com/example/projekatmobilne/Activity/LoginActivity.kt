@@ -84,7 +84,7 @@ class LoginActivity : AppCompatActivity() {
                     viewModel.errorMessage.observe(this@LoginActivity) { message ->
                         if (message.isNotEmpty()) {
                             Log.w("TAG", "Neuspesna prijava")
-                            Toast.makeText(this@LoginActivity, message, Toast.LENGTH_SHORT).show()
+                            Toast.makeText(this@LoginActivity, "Neuspesna prijava", Toast.LENGTH_SHORT).show()
                         }
                     }
                 } else {

@@ -1,14 +1,10 @@
 package com.example.projekatmobilne.Fragments
 
 import android.Manifest
-import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
-import android.location.LocationManager
 import android.os.Bundle
 import android.os.Looper
-import android.util.Log
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -16,28 +12,20 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.setFragmentResult
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.example.projekatmobilne.DataClasses.Apartman
-import com.example.projekatmobilne.MyRecyclerViewAdapterApartman
 import com.example.projekatmobilne.R
 import com.example.projekatmobilne.ViewModel.AddApartmentViewModel
 import com.example.projekatmobilne.ViewModel.SharedViewModel
 import com.example.projekatmobilne.databinding.FragmentHomeProfileBinding
 import com.google.android.gms.location.*
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
+//pristup zivotnom ciklusu komponente jetpack(viewmodel livedata)
 import kotlinx.coroutines.launch
 
-import java.util.concurrent.TimeUnit
 
 class HomeProfileFragment : Fragment() {
     private lateinit var binding: FragmentHomeProfileBinding
@@ -54,7 +42,7 @@ class HomeProfileFragment : Fragment() {
 
 
     companion object {
-        private const val LOCATION_PERMISSION_REQUEST_CODE = 1 // Zamijenite 123 sa željenim brojem
+        private const val LOCATION_PERMISSION_REQUEST_CODE = 1
     }
 
 
@@ -102,8 +90,6 @@ class HomeProfileFragment : Fragment() {
                 val location = locationResult.lastLocation
                 location?.let {
                     currentLocation = it
-                    val latitude = currentLocation?.latitude
-                    val longitude = currentLocation?.longitude
                 }
             }
 
@@ -130,25 +116,12 @@ class HomeProfileFragment : Fragment() {
 
     }
     private fun checkLocationPermission(): Boolean {
-        return (ContextCompat.checkSelfPermission(
-            requireContext(),
-            Manifest.permission.ACCESS_COARSE_LOCATION
-        ) == PackageManager.PERMISSION_GRANTED &&
-                ContextCompat.checkSelfPermission(
-                    requireContext(),
-                    Manifest.permission.ACCESS_FINE_LOCATION
-                ) == PackageManager.PERMISSION_GRANTED)
+        return (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED)
     }
 
     private fun requestPermissions() {
-        ActivityCompat.requestPermissions(
-            requireActivity(),
-            arrayOf(
-                Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ),
-            LOCATION_PERMISSION_REQUEST_CODE
-        )
+        ActivityCompat.requestPermissions(requireActivity(), arrayOf(Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION), LOCATION_PERMISSION_REQUEST_CODE)
     }
 
 
@@ -205,7 +178,6 @@ class HomeProfileFragment : Fragment() {
 
     override fun onDestroy() {
         super.onDestroy()
-        // Kada više nije potrebno praćenje lokacije, obavezno otkažite pretplatu na location updates
         fusedLocationClient.removeLocationUpdates(locationCallback)
     }
 
@@ -239,16 +211,6 @@ class HomeProfileFragment : Fragment() {
             }
 
         }
-     /*  apartmanViewModel.preuzmiSveApartmane { listaApartmana ->
-            lista.addAll(listaApartmana)
-        }*/
-      /*  lifecycleScope.launch(Dispatchers.IO){
-            lista = apartmanViewModel.preuzmiSveApartmane() as MutableList<Apartman>
-            // Ovde možete raditi sa listom apartmana
-        }*/
-
-
-
 
         binding.btnmapa.setOnClickListener{
 
@@ -256,13 +218,12 @@ class HomeProfileFragment : Fragment() {
             val selectedRadioButtonId = radioGroup.checkedRadioButtonId
             val korisnikovFilter = binding.ptFilter.text.toString()
 
-
-                if (selectedFilterID != -1) {
-                    when (selectedFilterID) {
+             if(selectedFilterID != -1){
+                    when(selectedFilterID){
                         R.id.IDbezFiltriranja -> {
                             sharedViewModel.setListaApartmana(lista)
-                            if (selectedRadioButtonId != -1) {
-                                when (selectedRadioButtonId) {
+                            if(selectedRadioButtonId != -1){
+                                when (selectedRadioButtonId){
                                     R.id.radioButton1 -> {
                                         it.findNavController()
                                             .navigate(R.id.action_homeProfileFragment_to_mapsFragment)
@@ -319,8 +280,8 @@ class HomeProfileFragment : Fragment() {
                                 }
                                 sharedViewModel.setListaApartmana(filtriranaLista)
 
-                                if (selectedRadioButtonId != -1) {
-                                    when (selectedRadioButtonId) {
+                                if(selectedRadioButtonId != -1){
+                                    when(selectedRadioButtonId){
                                         R.id.radioButton1 -> {
                                             it.findNavController()
                                                 .navigate(R.id.action_homeProfileFragment_to_mapsFragment)

@@ -1,35 +1,26 @@
 package com.example.projekatmobilne.Fragments
 
 import android.Manifest
-import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
-import android.location.LocationManager
 import android.os.Bundle
 import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat.getSystemService
-import androidx.core.os.bundleOf
 import androidx.fragment.app.*
 import androidx.lifecycle.Observer
-import androidx.lifecycle.SavedStateViewModelFactory
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import com.example.projekatmobilne.DataClasses.Apartman
 import com.example.projekatmobilne.DataClasses.User
-import com.example.projekatmobilne.MyRecyclerViewAdapterApartman
 import com.example.projekatmobilne.R
 import com.example.projekatmobilne.ViewModel.AddApartmentViewModel
 import com.example.projekatmobilne.ViewModel.AddCommentViewModel
-import com.example.projekatmobilne.ViewModel.CommentViewModel
 import com.example.projekatmobilne.ViewModel.SharedViewModel
 import com.google.android.gms.location.*
-import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
@@ -39,8 +30,6 @@ import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import com.google.firebase.firestore.FirebaseFirestore
-
 
 class MapsFragment : Fragment(), OnMapReadyCallback {
 
@@ -106,13 +95,10 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
     override fun onMapReady(googleMap: GoogleMap) {
 
-
-
         mMap = googleMap
         viewModelshared = ViewModelProvider(requireActivity()).get(SharedViewModel::class.java)
         viewModel = ViewModelProvider(this).get(AddApartmentViewModel::class.java)
         mMap.uiSettings.isZoomControlsEnabled = true
-
 
 
 
@@ -124,33 +110,12 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
 
 
-
         mMap.isMyLocationEnabled = true
 
 
         sharedViewModel.getListaApartmana()?.observe(viewLifecycleOwner, Observer { listaApartmana ->
 
             val targetMarkers = mutableListOf<Marker>()
-            /*if(listaApartmana.isEmpty()){
-                activity?.runOnUiThread {
-                    Toast.makeText(requireContext(), "Ne postoje stnovi sa takvom osobinom", Toast.LENGTH_SHORT).show()
-                }
-
-            }else{
-
-
-
-            for(apartman in listaApartmana) {
-                val marker = mMap.addMarker(
-                    MarkerOptions()
-                        .position(apartman.latlng!!)
-                        .title(apartman.adresa)
-                        .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
-                )
-                marker?.tag = apartman
-                targetMarkers.add(marker!!)
-             }
-            }*/
             val latLngApartmaniMap = mutableMapOf<LatLng, MutableList<Apartman>>()
 
             for (apartman in listaApartmana) {
@@ -164,13 +129,12 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
                     }
                 }
             }
-            Log.d("prikaz", "$latLngApartmaniMap")
 
             for ((latLng, apartmani) in latLngApartmaniMap) {
                 val marker = mMap.addMarker(
                     MarkerOptions()
                         .position(latLng)
-                        .title(apartmani[0].adresa) // Koristite prvi apartman za naslov markera
+                        .title(apartmani[0].brojZgrade.toString())
                         .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED))
                 )
                 marker!!.tag = apartmani
@@ -192,7 +156,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
 
 
                         for (targetLocation in listaApartmana) {
-                            Log.d("targetttt", "$targetLocation")
                             val distance = calculateDistance(currentLatLng, targetLocation.latlng!!)
                             if (distance <= proximityDistance) {
 
@@ -230,15 +193,6 @@ class MapsFragment : Fragment(), OnMapReadyCallback {
         })
 
            mMap.setOnMarkerClickListener{marker->
-
-          /*  val clickedApartman = marker.tag as? Apartman
-            Log.d("apartman kliknutii", "$clickedApartman")
-            if (clickedApartman != null) {
-                viewModelshared.setclickedApartman(clickedApartman)
-            }
-
-            val action = MapsFragmentDirections.actionMapsFragmentToCommentsFragment()
-            view?.findNavController()?.navigate(action)*/
                val kliknutiMarker = marker.tag as? List<Apartman>
                if(kliknutiMarker != null){
                    viewModelshared.setListaMarkera(kliknutiMarker)

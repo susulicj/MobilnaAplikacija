@@ -45,41 +45,6 @@ class AddApartmentViewModel : ViewModel() {
             }
     }
 
-   /* fun preuzmiSveApartmane(callback: (List<Apartman>) -> Unit) {
-        viewModelScope.launch {
-            try {
-                val querySnapshot = apartmanRef.get().await()
-
-                val listaApartmana = mutableListOf<Apartman>()
-                for (document in querySnapshot.documents) {
-                    val podaciApartmana = document.data
-
-                    val latlngData = podaciApartmana?.get("latlng") as? HashMap<String, Double>
-
-                    if (latlngData != null && latlngData.containsKey("latitude") && latlngData.containsKey("longitude")) {
-                        val latitude = latlngData["latitude"]!!
-                        val longitude = latlngData["longitude"]!!
-                        val latLng = LatLng(latitude, longitude)
-
-                        val apartman = Apartman(
-                            podaciApartmana["adresa"] as String,
-                            podaciApartmana["povrsina"] as Double,
-                            podaciApartmana["brojSoba"] as Long,
-                            podaciApartmana["brojTelefona"] as Long,
-                            podaciApartmana["email"] as String,
-                            latLng,
-                            podaciApartmana["verifikacioniKod"] as String
-                        )
-                        listaApartmana.add(apartman)
-                    }
-                }
-                callback(listaApartmana)
-            } catch (e: Exception) {
-                println("Greska prilikom izvršavanja upita: $e")
-                callback(emptyList())
-            }
-        }
-    }*/
 
   fun dodajOcenuApartmanu(apartmanID: String, novaOcena: Int){
       apartmanRef.document(apartmanID).update("listaOcena", FieldValue.arrayUnion(novaOcena))
@@ -93,63 +58,7 @@ class AddApartmentViewModel : ViewModel() {
 
   }
 
-   /* fun preuzmiSveApartmane(callback: (List<Apartman>) -> Unit) {
-        try {
-            apartmanRef.get()
-                .addOnSuccessListener { querySnapshot ->
-                    val listaApartmana = mutableListOf<Apartman>()
-                    for (document in querySnapshot.documents) {
-                        val podaciApartmana = document.data
 
-                        val latlngData = podaciApartmana?.get("latlng") as? HashMap<String, Double>
-
-                        if (latlngData != null && latlngData.containsKey("latitude") && latlngData.containsKey("longitude")) {
-                            val latitude = latlngData["latitude"]!!
-                            val longitude = latlngData["longitude"]!!
-                            val latLng = LatLng(latitude, longitude)
-
-                            val userData = podaciApartmana["user"] as HashMap<String, Any>?
-                            val user: User? = if (userData != null) {
-                                User(
-                                    email = userData["email"] as String?,
-                                    korisnickoIme = userData["korisnickoIme"] as String?,
-                                    imeiPrezime = userData["ImeiPrezime"] as String?,
-                                    brojTelefona = userData["brojTelefona"] as String?,
-                                    poeni = userData["poeni"] as Int?,
-                                    profileImageUrl = userData["profileImageUrl"] as String?
-                                )
-                            } else {
-                                null // Ako nema podataka o korisniku
-                            }
-
-                            val apartman = Apartman(
-                                podaciApartmana["adresa"] as String,
-                                podaciApartmana["povrsina"] as Double,
-                                podaciApartmana["brojSoba"] as Long,
-                                podaciApartmana["brojTelefona"] as Long,
-                                podaciApartmana["email"] as String,
-                                latLng,
-                                podaciApartmana["verifikacioniKod"] as String,
-                                podaciApartmana["posecnaOcena"] as Double?,
-                                podaciApartmana["listaOcena"] as MutableList<Int>?,
-                                podaciApartmana["sprat"] as Long?,
-                                podaciApartmana["datumKreiranja"] as String?,
-                                user
-                            )
-                            listaApartmana.add(apartman)
-                        }
-                    }
-                    callback(listaApartmana)
-                }
-                .addOnFailureListener { e ->
-                    println("Greska prilikom izvršavanja upita: $e")
-                    callback(emptyList())
-                }
-        } catch (e: Exception) {
-            println("Greska prilikom izvršavanja upita: $e")
-            callback(emptyList())
-        }
-    }*/
 
     suspend fun preuzmiSveApartmane(): List<Apartman> {
         return try {
@@ -176,7 +85,7 @@ class AddApartmentViewModel : ViewModel() {
                             profileImageUrl = userData["profileImageUrl"] as String?
                         )
                     } else {
-                        null // Ako nema podataka o korisniku
+                        null
                     }
 
                     val apartman = Apartman(

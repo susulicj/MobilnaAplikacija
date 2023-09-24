@@ -95,44 +95,6 @@ class AddCommentViewModel : ViewModel() {
             }
     }
 
-    /*fun getComments(verifikacioniKodApartman: String) {
-        commentFetchingStatusLiveData.postValue(true)
-
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                val querySnapshot = database.collection("komentari")
-                    .whereEqualTo("verifikacioniKodApartman", verifikacioniKodApartman)
-                    .get()
-                    .await()
-
-                val commentList = mutableListOf<Comment>()
-                querySnapshot.forEach { document ->
-                    val commentData = document.data
-                    val tekst = commentData["tekst"] as String?
-                    val userMap = commentData["user"] as Map<String, Any>?
-                    val apartmanMap = commentData["apartman"] as Map<String, Any>?
-                    val verifikacioniKod = commentData["verifikacioniKodApartman"] as String?
-
-                    val comment = Comment(
-                        tekst = tekst,
-                        user = userMap?.let { createUserFromMap(it) },
-                        apartman = apartmanMap?.let { createApartmanFromMap(it) },
-                        verifikacioniKodApartman = verifikacioniKod
-                    )
-
-                    commentList.add(comment)
-                }
-
-                setCommentList(commentList)
-                commentFetchingStatusLiveData.postValue(false)
-                Log.d("apartman", "Komentari su dohvaćeni: $commentList")
-            } catch (e: Exception) {
-                commentFetchingStatusLiveData.postValue(false)
-                // Handle exceptions here
-            }
-        }
-    }*/
-
     fun getComments(verifikacioniKodApartman: String) {
         commentFetchingStatusLiveData.postValue(true)
 
@@ -151,7 +113,7 @@ class AddCommentViewModel : ViewModel() {
 
                     val comment = Comment(
                         tekst = tekst,
-                        user = userMap?.let { createUserFromMap(it) },
+                        user = userMap?.let { createUserFromMap(it) },//nije null
                         apartman = apartmanMap?.let { createApartmanFromMap(it) },
                         verifikacioniKodApartman = verifikacioniKod
                     )

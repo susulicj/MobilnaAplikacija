@@ -8,18 +8,14 @@ import android.location.Location
 import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
-import android.provider.ContactsContract
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.core.content.ContextCompat.getSystemService
 import androidx.fragment.app.Fragment
 import com.example.projekatmobilne.databinding.FragmentAddMarkerBinding
-import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
@@ -33,7 +29,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.text.SimpleDateFormat
 import java.time.LocalDate
 
 
@@ -58,7 +53,6 @@ class AddMarkerFragment : Fragment()  {
     ): View? {
 
         currentFirebaseUser = FirebaseAuth.getInstance().currentUser!!
-        //da mi vrati usera sa odredjenim emailom i onda da njega stavim u novi apartman
         currentUser = User(currentFirebaseUser.email)
         viewModel = ViewModelProvider(this).get(AddApartmentViewModel::class.java)
         binding = FragmentAddMarkerBinding.inflate(inflater, container, false)
@@ -86,10 +80,6 @@ class AddMarkerFragment : Fragment()  {
           it.findNavController().navigate(R.id.action_addMarkerFragment_to_homeProfileFragment)
       }
 
-      /* setFragmentResultListener("location") { location, bundle ->
-            latLng = bundle.getString("location").toString()
-            Log.d("SelectedLatLng", "Latitude: $latLng")
-        }*/
 
         saveApartman()
 
@@ -103,7 +93,6 @@ class AddMarkerFragment : Fragment()  {
         if (requestCode == 1) {
             if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 if (ContextCompat.checkSelfPermission(requireContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    // Ako je dozvola dodeljena, postavite LocationListener-a
                     locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 0, 0f, locationListener)
                 }
             }
@@ -125,7 +114,6 @@ class AddMarkerFragment : Fragment()  {
                  brojSoba = binding.etBrojSoba.text.toString().toLong(),
                  brojTelefona = binding.tvtelefon.text.toString().toLong(),
                  email = binding.ptEmailKontakt.text.toString(),
-                // latlng = parseLatLngFromString(latLng),
                  latlng = lnglat,
                  verifikacioniKod = binding.idVerKod.text.toString(),
                  prosecnaOcena = 0.0,

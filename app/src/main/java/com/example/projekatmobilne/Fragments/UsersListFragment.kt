@@ -9,7 +9,6 @@ import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.projekatmobilne.MyRecyclerViewAdapter
 import com.example.projekatmobilne.MyRecyclerViewAdapterUser
 import com.example.projekatmobilne.R
 import com.example.projekatmobilne.ViewModel.UserViewModel
@@ -44,7 +43,7 @@ class UsersListFragment : Fragment() {
             it.findNavController().navigate(R.id.action_usersListFragment_to_userProfileFragment)
         }
 
-        // Osigurajte da osluškujete LiveData za sortiranu listu korisnika
+
         userViewModel.sortedUsers.observe(viewLifecycleOwner, Observer { userList ->
             val myAdapter = MyRecyclerViewAdapterUser(userList)
             recyclerView.adapter = myAdapter

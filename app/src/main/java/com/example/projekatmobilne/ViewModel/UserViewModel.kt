@@ -46,28 +46,6 @@ class UserViewModel: ViewModel() {
         })
     }
 
- /*   fun vratiTrenutngKorisnika(email: String, callback: (User?) -> Unit)
-    {
-        val query = databaseReference.child("Users").orderByChild("email").equalTo(email)
-
-        query.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    for (userSnapshot in dataSnapshot.children) {
-                        val user = userSnapshot.getValue(User::class.java)
-                        callback(user)
-                        return
-                    }
-                }
-                callback(null) //
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                // Došlo je do greške
-                callback(null)
-            }
-        })
-    }*/
  suspend fun vratiTrenutngKorisnika(email: String): User? = withContext(Dispatchers.IO) {
      val query = databaseReference.child("Users").orderByChild("email").equalTo(email)
 
@@ -116,24 +94,5 @@ class UserViewModel: ViewModel() {
 
 
 
-
-
-
-
-
-    /* suspend fun vratiTrenutngKorisnika(email: String): User? {
-         return withContext(Dispatchers.IO) {
-             val query = databaseReference.child("Users").orderByChild("email").equalTo(email)
-             val dataSnapshot = query.get().await()
-
-             if (dataSnapshot.exists()) {
-                 for (userSnapshot in dataSnapshot.children) {
-                     val user = userSnapshot.getValue(User::class.java)
-                     return@withContext user
-                 }
-             }
-             return@withContext null
-         }
-     }*/
 
 }

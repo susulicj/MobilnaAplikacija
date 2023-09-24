@@ -14,7 +14,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.navigation.findNavController
 import com.example.projekatmobilne.DataClasses.Apartman
 import com.example.projekatmobilne.DataClasses.User
-import com.example.projekatmobilne.MyRecyclerViewMarker
 import com.example.projekatmobilne.R
 import com.example.projekatmobilne.ViewModel.AddApartmentViewModel
 import com.example.projekatmobilne.ViewModel.AddCommentViewModel
@@ -22,7 +21,6 @@ import com.example.projekatmobilne.ViewModel.SharedViewModel
 import com.example.projekatmobilne.databinding.FragmentPodaciApartmanBinding
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
